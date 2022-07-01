@@ -19,7 +19,6 @@ public class InstanceSelect {
         addButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
         addButton.addActionListener(e ->
         {
-            //todo
             Controller.addInstance();
         });
 
@@ -43,11 +42,12 @@ public class InstanceSelect {
                 panel.add(instanceNameText);
 
                 final String id = instanceCodes[i];
+                final String name = instanceNames[i];
                 JButton openButton = new JButton("Open");
                 openButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
                 openButton.addActionListener(e ->
                 {
-                    //todo
+                    Controller.runInstance(id, name);
                 });
 
                 panel.add(openButton);

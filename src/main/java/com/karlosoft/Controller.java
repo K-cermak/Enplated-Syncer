@@ -11,7 +11,7 @@ import com.karlosoft.gui.*;
 public class Controller {
     public static String getConfigParameter(String file, String parameter) {
         Properties prop = new Properties();
-        String fileName = "./app/src/main/java/com/karlosoft/config/" + file + ".conf";
+        String fileName = "./src/main/java/com/karlosoft/config/" + file + ".conf";
         try (FileInputStream fis = new FileInputStream(fileName)) {
             prop.load(fis);
         } catch (FileNotFoundException ex) {
@@ -26,7 +26,7 @@ public class Controller {
 
     public static void setConfigParameter(String file, String parameter, String newValue) {
         Properties prop = new Properties();
-        String fileName = "./app/src/main/java/com/karlosoft/config/" + file + ".conf";
+        String fileName = "./src/main/java/com/karlosoft/config/" + file + ".conf";
         try (FileInputStream fis = new FileInputStream(fileName)) {
             prop.load(fis);
         } catch (FileNotFoundException ex) {
@@ -70,7 +70,7 @@ public class Controller {
     }
 
     public static boolean checkIdExist(String id) {
-        if (new java.io.File("./app/src/main/java/com/karlosoft/config/" + id + ".conf").exists()) {
+        if (new java.io.File("./src/main/java/com/karlosoft/config/" + id + ".conf").exists()) {
             return true;
         }
         return false;
@@ -91,7 +91,7 @@ public class Controller {
     }
 
     public static boolean createDefaultConfFile(String name) {
-        String fileName = "./app/src/main/java/com/karlosoft/config/" + name + ".conf";
+        String fileName = "./src/main/java/com/karlosoft/config/" + name + ".conf";
         try (Writer writer = new java.io.FileWriter(fileName)) {
             writer.write("name=name\n");
             writer.write("folder=folder\n");
@@ -111,6 +111,14 @@ public class Controller {
     public static void refreshMainWindow() {
         InstanceSelect.close();
         InstanceSelect.run(Controller.getConfigParameter("appGlobal", "app.instancesNames").split(","), Controller.getConfigParameter("appGlobal", "app.instancesCode").split(","));
+    }
+
+    public static void runInstance(String id, String name) {
+        Instance.run(id, name);
+    } 
+
+    public static void closeInstanceSelect() {
+        InstanceSelect.close();
     }
 
 }
