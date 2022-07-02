@@ -1,5 +1,6 @@
 package com.karlosoft.gui;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -39,5 +40,16 @@ public class Popup {
     public static String simpleInput(String title, String message) {
         String input = JOptionPane.showInputDialog(null, message, title, JOptionPane.QUESTION_MESSAGE);
         return input;
+    }
+
+    public static String selectFolder() {
+        //select folder on drive with jfilechoser
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.showOpenDialog(null);
+        if (chooser.getSelectedFile() != null) {
+            return chooser.getSelectedFile().getAbsolutePath();
+        }
+        return "";   
     }
 }

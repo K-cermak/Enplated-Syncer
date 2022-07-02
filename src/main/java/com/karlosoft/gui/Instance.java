@@ -7,14 +7,14 @@ import java.awt.*;
 
 public class Instance {
     /*
-    export to file
-    import file
+        export to file
+        import file
 
-    upload to github
-    download from github
-    
-    deploy to web
-    change settings
+        upload to github
+        download from github
+        
+        deploy
+        change settings
     */
 
     static JDialog dialog;
@@ -44,7 +44,10 @@ public class Instance {
         exportButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
         exportButton.addActionListener(e ->
         {
-            //todo
+            String exportLocation = Controller.selectFolder();
+            if (!exportLocation.equals("") && exportLocation != null) {
+                Controller.exportInstance(instanceId, exportLocation);
+            }
         });
 
         panel.add(exportButton);
@@ -56,7 +59,6 @@ public class Instance {
         downloadButton.addActionListener(e ->
         {
             //todo
-            System.out.println("Hej");
         });
 
 
@@ -67,7 +69,6 @@ public class Instance {
         uploadButton.addActionListener(e ->
         {
             //todo
-            System.out.println("Hej");
         });
 
         //verify that github is set
@@ -89,7 +90,7 @@ public class Instance {
 
 
         //deploy to web
-        JButton deployButton = new JButton("Deploy to web");
+        JButton deployButton = new JButton("Deploy");
         deployButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
         deployButton.addActionListener(e ->
         {

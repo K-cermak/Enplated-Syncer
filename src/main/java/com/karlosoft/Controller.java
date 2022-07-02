@@ -1,44 +1,60 @@
 package com.karlosoft;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.Writer;
+import com.karlosoft.gui.*;
+
 import java.util.Properties;
 
-import com.karlosoft.gui.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 
 public class Controller {
     public static String getConfigParameter(String file, String parameter) {
         Properties prop = new Properties();
         String fileName = "./src/main/java/com/karlosoft/config/" + file + ".conf";
-        try (FileInputStream fis = new FileInputStream(fileName)) {
-            prop.load(fis);
-        } catch (FileNotFoundException ex) {
-            Popup.showMessage(1, "Error loading config file", "Config file not found. Please reinstall your app.");
-            System.exit(1);
-        } catch (IOException ex) {
-            Popup.showMessage(1, "Error loading config file", "Config file not found. Please reinstall your app.");
-            System.exit(1);
+
+        //use utf-8
+        Charset charset = StandardCharsets.UTF_8;
+        Path path = Paths.get(fileName);
+        try {
+            prop.load(Files.newBufferedReader(path, charset));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return prop.getProperty(parameter);
+        
+        
+        //return prop.getProperty(parameter);
     }
 
     public static void setConfigParameter(String file, String parameter, String newValue) {
-        Properties prop = new Properties();
+        //replace \ with \\
+        newValue = newValue.replace("\\", "\\\\\\\\");
         String fileName = "./src/main/java/com/karlosoft/config/" + file + ".conf";
-        try (FileInputStream fis = new FileInputStream(fileName)) {
-            prop.load(fis);
-        } catch (FileNotFoundException ex) {
-            Popup.showMessage(1, "Error loading config file", "Config file not found. Please reinstall your app.");
-            System.exit(1);
+        String line = null;
+        try {
+            line = new String(Files.readAllBytes(Paths.get(fileName)), "UTF-8");
         } catch (IOException ex) {
             Popup.showMessage(1, "Error loading config file", "Config file not found. Please reinstall your app.");
             System.exit(1);
         }
-        prop.setProperty(parameter, newValue);
-        try (Writer writer = new java.io.FileWriter(fileName)) {
-            prop.store(writer, null);
+
+        //replace value
+        String newLine = line.replaceAll(parameter + "=.*", parameter + "=" + newValue);
+        Path logFile = Paths.get(fileName);
+        //write new line
+        try {
+            BufferedWriter writer = Files.newBufferedWriter(logFile, StandardCharsets.UTF_8);
+            writer.write(newLine);
+            writer.close();
         } catch (IOException ex) {
             Popup.showMessage(1, "Error loading config file", "Config file not found. Please reinstall your app.");
             System.exit(1);
@@ -92,8 +108,7 @@ public class Controller {
 
     public static boolean createDefaultConfFile(String name) {
         String fileName = "./src/main/java/com/karlosoft/config/" + name + ".conf";
-        try (Writer writer = new java.io.FileWriter(fileName)) {
-            writer.write("name=name\n");
+        try (Writer writer = new java.io.FileWriter(fileName, Charset.forName("utf-8"))) {
             writer.write("folder=folder\n");
             writer.write("database=false\n");
             writer.write("github=false\n");
@@ -121,4 +136,41 @@ public class Controller {
         InstanceSelect.close();
     }
 
+    public static String selectFolder() {
+        return Popup.selectFolder();
+    }
+
+    public static void exportInstance(String id, String location) {   
+        //get instance location
+        String instanceFolder = getConfigParameter(id, "folder");
+        //pack to zip with timestamp
+        String zipName = "INSTANCE-EXPORT-"+ id + "-" + System.currentTimeMillis() + ".zip";
+
+
+        RefreshableWindow.setTotalFiles(Controller.numberOfFiles(id));
+        RefreshableWindow.setText("Exporting instance, please wait...");
+       
+
+        new Thread(() -> {
+            ZipUtils appZip = new ZipUtils();
+            ZipUtils.setSourceFolder(instanceFolder);
+            appZip.generateFileList(new File(instanceFolder));
+            appZip.zipIt(location + "\\" + zipName);
+            RefreshableWindow.closeWindow();
+        }).start();
+
+        RefreshableWindow.run();
+        RefreshableWindow.resetData();
+
+        Popup.showMessage(0, "Export complete", "Instance exported to " + location + "\\" + zipName);
+    }
+
+    public static void refreshWindow() {
+        RefreshableWindow.addFile();
+    }
+
+    public static int numberOfFiles(String instanceId) {
+        String instanceFolder = getConfigParameter(instanceId, "folder");
+        return ZipUtils.numberOfFiles(instanceFolder);
+    }
 }

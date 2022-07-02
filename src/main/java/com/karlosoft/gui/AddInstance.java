@@ -165,7 +165,6 @@ public class AddInstance {
                 String id = Controller.generateRandomId();
                 if (Controller.createDefaultConfFile(id)) {
                     //continue
-                    Controller.setConfigParameter(id, "name", nameField.getText());
                     Controller.setConfigParameter(id, "folder", folder);
                     Controller.setConfigParameter(id, "database", dbCheckBox.isSelected() ? "true" : "false");
                     if (deployableCheckBox.isSelected()) {

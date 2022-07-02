@@ -12,17 +12,14 @@ import java.util.zip.ZipOutputStream;
 public class ZipUtils {
 
     private List <String> fileList;
-    private static final String OUTPUT_ZIP_FILE = "Folder.zip";
-    private static final String SOURCE_FOLDER = "E:\\Data\\test"; // SourceFolder path
+    private static String SOURCE_FOLDER = "E:\\Data\\test"; // SourceFolder path
 
     public ZipUtils() {
         fileList = new ArrayList < String > ();
     }
 
-    public static void main(String[] args) {
-        ZipUtils appZip = new ZipUtils();
-        appZip.generateFileList(new File(SOURCE_FOLDER));
-        appZip.zipIt(OUTPUT_ZIP_FILE);
+    public static void setSourceFolder(String sourceFolder) {
+        SOURCE_FOLDER = sourceFolder;
     }
 
     public void zipIt(String zipFile) {
@@ -34,11 +31,13 @@ public class ZipUtils {
             fos = new FileOutputStream(zipFile);
             zos = new ZipOutputStream(fos);
 
-            System.out.println("Output to Zip : " + zipFile);
+            //System.out.println("Output to Zip : " + zipFile);
             FileInputStream in = null;
 
             for (String file: this.fileList) {
-                System.out.println("File Added : " + file);
+                Controller.refreshWindow();
+                //System.out.println("File Added : " + file);
+
                 ZipEntry ze = new ZipEntry(source + File.separator + file);
                 zos.putNextEntry(ze);
                 try {
@@ -53,7 +52,7 @@ public class ZipUtils {
             }
 
             zos.closeEntry();
-            System.out.println("Folder successfully compressed");
+            //System.out.println("Folder successfully compressed");
 
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -82,5 +81,19 @@ public class ZipUtils {
 
     private String generateZipEntry(String file) {
         return file.substring(SOURCE_FOLDER.length() + 1, file.length());
+    }
+
+    public static int numberOfFiles(String folder) {
+        int count = 0;
+        File f = new File(folder);
+        File[] files = f.listFiles();
+        for (File file : files) {
+            if (file.isFile()) {
+                count++;
+            } else if (file.isDirectory()) {
+                count = count + numberOfFiles(file.getAbsolutePath());
+            }
+        }
+        return count;
     }
 }
