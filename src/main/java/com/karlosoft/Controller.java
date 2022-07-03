@@ -193,4 +193,13 @@ public class Controller {
 
         Popup.showMessage(0, "Import complete", "Instance imported from " + zipFile);
     }
+
+    public static void closeApp() {
+        System.exit(0);
+    }
+
+    public static void closeInstance() {
+        Instance.close();
+        InstanceSelect.run(Controller.getConfigParameter("appGlobal", "app.instancesNames").split(","), Controller.getConfigParameter("appGlobal", "app.instancesCode").split(","));
+    }
 }

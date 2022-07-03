@@ -4,6 +4,8 @@ import com.karlosoft.Controller;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Instance {
     /*
@@ -127,6 +129,17 @@ public class Instance {
         dialog = jop.createDialog("Instance: " + name);
         dialog.setSize(1000, 450);
         dialog.setContentPane(scrollPane);
+        dialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        dialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent event) {
+                Popup.closeOption();
+            }
+        });
         dialog.setVisible(true);
+    }
+
+    public static void close() {
+        dialog.dispose();
     }
 }

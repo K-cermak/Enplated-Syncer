@@ -4,6 +4,11 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import com.karlosoft.Controller;
+
+import javax.swing.*;
+import java.awt.*;
+
 public class Popup {
     public static void showMessage(int type, String title, String message) {
         /*
@@ -62,5 +67,46 @@ public class Popup {
             return chooser.getSelectedFile().getAbsolutePath();
         }
         return "";   
+    }
+
+    public static void closeOption() {
+        //create window with 3 buttons - close app, close instance, cancel
+        JDialog dialog = new JDialog();
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(3, 2, 30, 30));
+        JScrollPane scrollPane = new JScrollPane(panel);
+        JButton closeButton = new JButton("Close app");
+        closeButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
+        closeButton.addActionListener(e ->
+        {
+            Controller.closeApp();
+        });
+
+        JButton closeInstanceButton = new JButton("Close instance");
+        closeInstanceButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
+        closeInstanceButton.addActionListener(e ->
+        {
+            dialog.dispose();
+            Controller.closeInstance();
+        });
+
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
+        cancelButton.addActionListener(e ->
+        {
+            dialog.dispose();
+        });
+
+        panel.add(closeButton);
+        panel.add(closeInstanceButton);
+        panel.add(cancelButton);
+
+        dialog.setContentPane(scrollPane);
+        dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        dialog.setTitle("Close");
+        dialog.setSize(300, 200);
+        dialog.setLocationRelativeTo(null);
+        dialog.setModal(true);
+        dialog.setVisible(true);
     }
 }
