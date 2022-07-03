@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class ZipUtils {
@@ -93,6 +94,77 @@ public class ZipUtils {
             } else if (file.isDirectory()) {
                 count = count + numberOfFiles(file.getAbsolutePath());
             }
+        }
+        return count;
+    }
+
+    public static void unzip(String zipFile, String unzipTo) {
+        unzipTo = oneFolderUp(unzipTo);
+        try {
+            File f = new File(unzipTo);
+            if (!f.isDirectory()) {
+                f.mkdir();
+            }
+            ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
+            ZipEntry ze = zis.getNextEntry();
+            while (ze != null) {
+                Controller.refreshWindow();
+                String fileName = ze.getName();
+                File newFile = new File(unzipTo + File.separator + fileName);
+                new File(newFile.getParent()).mkdirs();
+                FileOutputStream fos = new FileOutputStream(newFile);
+                byte[] buffer = new byte[1024];
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+                fos.close();
+                ze = zis.getNextEntry();
+            }
+            zis.closeEntry();
+            zis.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static String oneFolderUp(String folder) {
+        String[] parts = folder.split("\\\\");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < parts.length - 1; i++) {
+            sb.append(parts[i]);
+            sb.append("\\");
+        }
+        return sb.toString();
+    }
+
+    public static void deleteFolderData(String folder) {
+        //delete all files including subfolders
+        File f = new File(folder);
+        File[] files = f.listFiles();
+        for (File file : files) {
+            if (file.isFile()) {
+                file.delete();
+            } else if (file.isDirectory()) {
+                deleteFolderData(file.getAbsolutePath());
+                file.delete();
+            }
+        }
+    }
+
+    public static int numberOfFilesZip(String zipFile) {
+        int count = 0;
+        try {
+            ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
+            ZipEntry ze = zis.getNextEntry();
+            while (ze != null) {
+                count++;
+                ze = zis.getNextEntry();
+            }
+            zis.closeEntry();
+            zis.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
         return count;
     }

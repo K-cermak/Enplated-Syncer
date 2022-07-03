@@ -29,18 +29,28 @@ public class Instance {
 
 
         //import from file
-        JButton importButton = new JButton("Import from file");
+        JButton importButton = new JButton("Import from zip");
         importButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
         importButton.addActionListener(e ->
         {
-            //todo
+            String zipFile = Popup.selectFile("zip");
+            if (!zipFile.equals("") && zipFile != null) {
+                //if it is really zip
+                if (zipFile.endsWith(".zip")) {
+                    if (Popup.showConfirm("Import from zip", "Are you sure you want to import from zip? This will overwrite the current instance data. This action cannot be undone.")) {
+                        Controller.importInstance(zipFile, instanceId);
+                    }
+                } else {
+                    Popup.showMessage(1, "Import from zip", "The selected file is not a zip file.");
+                }
+            }
         });
 
         panel.add(importButton);
 
 
         //export to file
-        JButton exportButton = new JButton("Export to file");
+        JButton exportButton = new JButton("Export to zip");
         exportButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
         exportButton.addActionListener(e ->
         {

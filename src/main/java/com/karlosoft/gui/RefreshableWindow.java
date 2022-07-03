@@ -61,7 +61,6 @@ public class RefreshableWindow {
         //text and progress to panel
         panel.add(label);
         panel.add(progressBar);
-       
 
         //dialog
         dialog = jop.createDialog("Exporting");

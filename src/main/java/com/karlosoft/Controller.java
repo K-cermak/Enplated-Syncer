@@ -173,4 +173,24 @@ public class Controller {
         String instanceFolder = getConfigParameter(instanceId, "folder");
         return ZipUtils.numberOfFiles(instanceFolder);
     }
+
+    public static void importInstance(String zipFile, String instanceId) {
+        String folder = getConfigParameter(instanceId, "folder");
+
+        //import new
+        RefreshableWindow.setTotalFiles(ZipUtils.numberOfFilesZip(zipFile));
+        RefreshableWindow.setText("Importing new files, please wait...");
+
+        new Thread(() -> {
+            ZipUtils.deleteFolderData(folder);
+            ZipUtils.unzip(zipFile, folder);
+
+            RefreshableWindow.closeWindow();
+        }).start();
+
+        RefreshableWindow.run();
+        RefreshableWindow.resetData();
+
+        Popup.showMessage(0, "Import complete", "Instance imported from " + zipFile);
+    }
 }

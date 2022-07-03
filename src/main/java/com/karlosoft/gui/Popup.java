@@ -52,4 +52,15 @@ public class Popup {
         }
         return "";   
     }
+
+    public static String selectFile(String extension) {
+        //select file on drive with jfilechoser
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter(extension, extension));
+        chooser.showOpenDialog(null);
+        if (chooser.getSelectedFile() != null) {
+            return chooser.getSelectedFile().getAbsolutePath();
+        }
+        return "";   
+    }
 }
