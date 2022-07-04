@@ -66,7 +66,7 @@ public class Instance {
 
 
         //download from github
-        JButton downloadButton = new JButton("Download from github");
+        JButton downloadButton = new JButton("Download from GitHub");
         downloadButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
         downloadButton.addActionListener(e ->
         {
@@ -76,7 +76,7 @@ public class Instance {
 
 
         //upload to github
-        JButton uploadButton = new JButton("Upload to github");
+        JButton uploadButton = new JButton("Upload to GitHub");
         uploadButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
         uploadButton.addActionListener(e ->
         {

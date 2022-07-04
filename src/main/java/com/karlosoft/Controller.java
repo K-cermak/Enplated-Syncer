@@ -31,9 +31,6 @@ public class Controller {
             e.printStackTrace();
         }
         return prop.getProperty(parameter);
-        
-        
-        //return prop.getProperty(parameter);
     }
 
     public static void setConfigParameter(String file, String parameter, String newValue) {
@@ -151,7 +148,7 @@ public class Controller {
             ZipUtils appZip = new ZipUtils();
             ZipUtils.setSourceFolder(instanceFolder);
             appZip.generateFileList(new File(instanceFolder));
-            appZip.zipIt(location + "\\" + zipName);
+            appZip.zipIt(location + "\\" + zipName, true);
             RefreshableWindow.closeWindow();
         }).start();
 
@@ -179,7 +176,7 @@ public class Controller {
 
         new Thread(() -> {
             ZipUtils.deleteFolderData(folder);
-            ZipUtils.unzip(zipFile, folder);
+            ZipUtils.unzip(zipFile, folder, true);
 
             RefreshableWindow.closeWindow();
         }).start();
@@ -252,25 +249,41 @@ public class Controller {
     }
 
     public static void uploadGithub(String instanceId) {
-        //create folder
-        String folder = GithubSyncer.createFolder(instanceId);
-        String instanceFolder = getConfigParameter(instanceId, "folder");
+        RefreshableWindow.setTotalFiles(4);
+        RefreshableWindow.setText("Uploading to GitHub, please wait...");
 
-        //add zip to it
-        ZipUtils appZip = new ZipUtils();
-        ZipUtils.setSourceFolder(instanceFolder);
-        appZip.generateFileList(new File(instanceFolder));
-        appZip.zipIt(folder + "\\" + instanceId + ".zip");
+        new Thread(() -> {
+            //create folder
+            String folder = GithubSyncer.createFolder(instanceId);
+            String instanceFolder = getConfigParameter(instanceId, "folder");
 
-        //initialize git in folder
-        GithubSyncer.initializeGit(folder);
-        GithubSyncer.setDetails(folder, instanceId);
+            //add zip to it
+            RefreshableWindow.addFile();
+            ZipUtils appZip = new ZipUtils();
+            ZipUtils.setSourceFolder(instanceFolder);
+            appZip.generateFileList(new File(instanceFolder));
+            appZip.zipIt(folder + "\\" + instanceId + ".zip", false);
 
-        //upload zip
-        GithubSyncer.push(folder);
+            //initialize git in folder
+            RefreshableWindow.addFile();
+            GithubSyncer.initializeGit(folder);
+            GithubSyncer.setDetails(folder, instanceId);
 
-        //delete folder
-        System.out.println("done");
+            //upload zip
+            RefreshableWindow.addFile();
+            GithubSyncer.push(folder);
+
+            //delete folder
+            RefreshableWindow.addFile();
+            //wait for push to finish
+
+            GithubSyncer.deleteFolder(folder);
+            RefreshableWindow.closeWindow();
+        }).start();
+
+        RefreshableWindow.run();
+        RefreshableWindow.resetData();
+        Popup.showMessage(0, "Upload completed", "Instance successfully uploaded to GitHub");
     }
 
     public static void changeId(String oldId, String newId) {

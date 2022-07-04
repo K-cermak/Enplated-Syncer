@@ -66,15 +66,30 @@ public class GithubSyncer {
     public static void push(String folder) {
         try {
             execCmd("git add .", folder);
-            execCmd("git commit -m \"EnplatedSyncer\"", folder);
+            execCmd("git commit -m \"By Enplated Syncer\"", folder);
             execCmd("git branch -M main", folder);
-            execCmd("git push origin main", folder);
+            execCmd("git push origin main --force", folder);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static String execCmd(String cmd, String runInFolder) {
+    public static void deleteFolder(String folder) {
+        File file = new File(folder);
+        if (file.exists()) {
+            //clean everything in the folder
+            for (File f : file.listFiles()) {
+                if (f.isDirectory()) {
+                    deleteFolder(f.getAbsolutePath());
+                } else {
+                    f.delete();
+                }
+            }
+            file.delete();
+        }      
+    }
+
+    public static String execCmd(String cmd, String runInFolder) throws InterruptedException {
         String result = null;
         try {
             Process process = Runtime.getRuntime().exec(cmd, null, new File(runInFolder));

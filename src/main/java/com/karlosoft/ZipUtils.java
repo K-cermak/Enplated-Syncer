@@ -23,7 +23,7 @@ public class ZipUtils {
         SOURCE_FOLDER = sourceFolder;
     }
 
-    public void zipIt(String zipFile) {
+    public void zipIt(String zipFile, boolean notify) {
         byte[] buffer = new byte[1024];
         String source = new File(SOURCE_FOLDER).getName();
         FileOutputStream fos = null;
@@ -32,12 +32,12 @@ public class ZipUtils {
             fos = new FileOutputStream(zipFile);
             zos = new ZipOutputStream(fos);
 
-            //System.out.println("Output to Zip : " + zipFile);
             FileInputStream in = null;
 
             for (String file: this.fileList) {
-                Controller.refreshWindow();
-                //System.out.println("File Added : " + file);
+                if (notify == true) {
+                    Controller.refreshWindow();
+                }
 
                 ZipEntry ze = new ZipEntry(source + File.separator + file);
                 zos.putNextEntry(ze);
@@ -53,7 +53,6 @@ public class ZipUtils {
             }
 
             zos.closeEntry();
-            //System.out.println("Folder successfully compressed");
 
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -98,7 +97,7 @@ public class ZipUtils {
         return count;
     }
 
-    public static void unzip(String zipFile, String unzipTo) {
+    public static void unzip(String zipFile, String unzipTo, boolean notify) {
         unzipTo = oneFolderUp(unzipTo);
         try {
             File f = new File(unzipTo);
@@ -108,7 +107,9 @@ public class ZipUtils {
             ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
             ZipEntry ze = zis.getNextEntry();
             while (ze != null) {
-                Controller.refreshWindow();
+                if (notify == true) {
+                    Controller.refreshWindow();
+                }
                 String fileName = ze.getName();
                 File newFile = new File(unzipTo + File.separator + fileName);
                 new File(newFile.getParent()).mkdirs();

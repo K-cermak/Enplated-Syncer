@@ -88,6 +88,8 @@ public class InstanceSettings {
             if (Popup.showConfirm("Delete instance", "Are you sure you want to delete this instance? This operation will delete the current instance. It will not delete any data in instance folder or data on GitHub or web.")) {
                 Controller.deleteInstance(instanceId);
                 Popup.showMessage(0, "Instance deleted successfully", "Instance deleted successfully!");
+                dialog.dispose();
+                Controller.restartApp();
             }
         });
 
