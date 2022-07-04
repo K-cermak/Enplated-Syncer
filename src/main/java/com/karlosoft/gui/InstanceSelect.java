@@ -37,7 +37,7 @@ public class InstanceSelect {
 
         for (int i = 0; i < instanceNames.length; i++) {
             if (instanceNames[i] != null && !instanceNames[i].equals("")) {
-                JLabel instanceNameText = new JLabel(instanceNames[i], JLabel.CENTER);
+                JLabel instanceNameText = new JLabel(instanceNames[i] + " (ID: " + instanceCodes[i] + ")", JLabel.CENTER);
                 instanceNameText.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 20));
                 panel.add(instanceNameText);
 

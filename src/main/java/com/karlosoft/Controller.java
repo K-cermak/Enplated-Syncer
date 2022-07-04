@@ -271,6 +271,20 @@ public class Controller {
 
         //delete folder
         System.out.println("done");
-        
+    }
+
+    public static void changeId(String oldId, String newId) {
+        //get all ids to array
+        String[] ids = Controller.getConfigParameter("appGlobal", "app.instancesCode").split(",");
+        //get index of id
+        int index = Arrays.asList(ids).indexOf(oldId);
+        //set new id
+        ids[index] = newId;
+        //set new id
+        setConfigParameter("appGlobal", "app.instancesCode", String.join(",", ids));
+
+        //change conf file
+        File confFile = new File("./src/main/java/com/karlosoft/config/" + oldId + ".conf");
+        confFile.renameTo(new File("./src/main/java/com/karlosoft/config/" + newId + ".conf"));
     }
 }

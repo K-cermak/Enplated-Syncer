@@ -16,10 +16,9 @@ public class InstanceSettings {
     static JDialog dialog;
 
     public static void changeSettings(String instanceId) {
-        
         dialog = new JDialog();
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(8, 1, 30, 30));
+        panel.setLayout(new GridLayout(9, 1, 30, 30));
         JScrollPane scrollPane = new JScrollPane(panel);
 
         //label
@@ -34,6 +33,14 @@ public class InstanceSettings {
         changeNameButton.addActionListener(e ->
         {
             changeName(instanceId);
+        });
+
+        //button change id
+        JButton changeIdButton = new JButton("Change ID");
+        changeIdButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
+        changeIdButton.addActionListener(e ->
+        {
+            changeId(instanceId);
         });
 
         //change folder
@@ -93,6 +100,7 @@ public class InstanceSettings {
         });
 
         panel.add(changeNameButton);
+        panel.add(changeIdButton);
         panel.add(changeFolderButton);
         panel.add(changeDatabaseSettingsButton);
         panel.add(changeDeployableSettingsButton);
@@ -237,7 +245,7 @@ public class InstanceSettings {
 
         //text field
         JTextField urlTextField = new JTextField();
-        urlTextField.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
+        urlTextField.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 12));
         String urlText = Controller.getConfigParameter(instanceId, "github");
         if (urlText.equals("false")) {
             urlTextField.setText("");
@@ -451,6 +459,70 @@ public class InstanceSettings {
         dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         dialog.setTitle("Change deployable settings");
         dialog.setSize(300, 550);
+        dialog.setLocationRelativeTo(null);
+        dialog.setModal(true);
+        dialog.setVisible(true);
+    }
+
+    public static void changeId(String instanceId) {
+        JDialog dialog = new JDialog();
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(4, 1, 30, 30));
+        JScrollPane scrollPane = new JScrollPane(panel);
+
+        //id
+        JTextArea label = new JTextArea("Warning: The change of ID is for the case where you are syncing data \n across multiple devices and using GitHub to do so. \nBe aware that synced data with GitHub is linked to the ID and existing \n uploaded data will no longer work for syncing.");
+        label.setEditable(false);
+        label.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
+        panel.add(label);
+
+        //text field
+        JTextField idTextField = new JTextField();
+        idTextField.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
+        idTextField.setText(instanceId);
+
+        //save
+        JButton saveButton = new JButton("Save");
+        saveButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
+        saveButton.addActionListener(e ->
+        {
+            //check if 5 characters
+            if (idTextField.getText().length() == 5) {
+                //if id contain only letters and numbers
+                if (idTextField.getText().matches("[A-Z0-9]+")) {
+                    //if id is not already used
+                    if (!Controller.checkIdExist(idTextField.getText())) {
+                        Controller.changeId(instanceId, idTextField.getText());
+                        dialog.dispose();
+                        showChangesPopup();
+                    } else {
+                        Popup.showMessage(1, "Error", "This ID is already used");
+                    }
+                } else {
+                    Popup.showMessage(1, "Error", "ID must contain only letters (A-Z) and numbers (0-9)");
+                }
+            } else {
+                Popup.showMessage(1, "Error", "ID must be 5 characters long");
+            }
+        });
+
+        panel.add(idTextField);
+        panel.add(saveButton);
+
+        //cancel
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
+        cancelButton.addActionListener(e ->
+        {
+            dialog.dispose();
+        });
+
+        panel.add(cancelButton);
+
+        dialog.setContentPane(scrollPane);
+        dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        dialog.setTitle("Change ID");
+        dialog.setSize(500, 500);
         dialog.setLocationRelativeTo(null);
         dialog.setModal(true);
         dialog.setVisible(true);
