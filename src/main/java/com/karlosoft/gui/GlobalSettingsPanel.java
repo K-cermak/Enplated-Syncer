@@ -9,10 +9,11 @@ import java.awt.*;
 public class GlobalSettingsPanel {
 
     static JDialog dialog;
+    static String folder = Controller.getConfigParameter("appGlobal", "app.dbPath");
 
     public static void run() {
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(3, 2, 30, 30));  
+        panel.setLayout(new GridLayout(4, 2, 30, 30));  
         JOptionPane jop = new JOptionPane();
 
         //input for github email
@@ -35,6 +36,24 @@ public class GlobalSettingsPanel {
         githubPasswordText.setText(Controller.getConfigParameter("appGlobal", "app.githubPassword"));
         panel.add(githubPasswordText);
 
+        
+        //database path
+        JLabel databasePathLabel = new JLabel("Database path (selected: "+ folder +"):", JLabel.CENTER);
+        databasePathLabel.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
+        panel.add(databasePathLabel);
+
+        //button for select
+        JButton databasePathButton = new JButton("Select");
+        databasePathButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
+        databasePathButton.addActionListener(e -> {
+            String newFolder = Controller.selectFolder();
+            if (!newFolder.equals("") && newFolder != null) {
+                folder = newFolder;
+                databasePathLabel.setText("Database path (selected: " + folder + ")");
+            }
+        });
+        panel.add(databasePathButton);
+
         //save
         JButton saveButton = new JButton("Save");
         saveButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
@@ -42,6 +61,7 @@ public class GlobalSettingsPanel {
         {
             Controller.setConfigParameter("appGlobal", "app.githubEmail", githubEmailText.getText());
             Controller.setConfigParameter("appGlobal", "app.githubPassword", String.valueOf(githubPasswordText.getPassword()));
+            Controller.setConfigParameter("appGlobal", "app.dbPath", folder);
             Popup.showMessage(0, "Success", "Succesfully edited");
             dialog.dispose();
         });
