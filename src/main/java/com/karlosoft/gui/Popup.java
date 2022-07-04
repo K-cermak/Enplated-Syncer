@@ -73,7 +73,7 @@ public class Popup {
         //create window with 3 buttons - close app, close instance, cancel
         JDialog dialog = new JDialog();
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(3, 2, 30, 30));
+        panel.setLayout(new GridLayout(3, 1, 30, 30));
         JScrollPane scrollPane = new JScrollPane(panel);
         JButton closeButton = new JButton("Close app");
         closeButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
@@ -87,7 +87,7 @@ public class Popup {
         closeInstanceButton.addActionListener(e ->
         {
             dialog.dispose();
-            Controller.closeInstance();
+            Controller.restartApp();
         });
 
         JButton cancelButton = new JButton("Cancel");

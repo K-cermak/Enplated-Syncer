@@ -183,7 +183,7 @@ public class AddInstance {
                     
                     //close and refresh windows
                     dialog.dispose();
-                    Controller.refreshMainWindow();
+                    Controller.restartApp();
 
                 } else {
                     Popup.showMessage(1, "Error creating config file", "Error creating config file.");

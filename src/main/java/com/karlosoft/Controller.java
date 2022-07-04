@@ -2,6 +2,7 @@ package com.karlosoft;
 
 import com.karlosoft.gui.*;
 
+import java.util.Arrays;
 import java.util.Properties;
 
 import java.io.BufferedWriter;
@@ -123,11 +124,6 @@ public class Controller {
         }
     }
 
-    public static void refreshMainWindow() {
-        InstanceSelect.close();
-        InstanceSelect.run(Controller.getConfigParameter("appGlobal", "app.instancesNames").split(","), Controller.getConfigParameter("appGlobal", "app.instancesCode").split(","));
-    }
-
     public static void runInstance(String id, String name) {
         Instance.run(id, name);
     } 
@@ -198,8 +194,60 @@ public class Controller {
         System.exit(0);
     }
 
-    public static void closeInstance() {
-        Instance.close();
-        InstanceSelect.run(Controller.getConfigParameter("appGlobal", "app.instancesNames").split(","), Controller.getConfigParameter("appGlobal", "app.instancesCode").split(","));
+    public static void changeFolder(String id, String folder) {
+        setConfigParameter(id, "folder", folder);
+    }
+
+    public static String getNameFromId(String id) {
+        //get all ids to array
+        String[] ids = Controller.getConfigParameter("appGlobal", "app.instancesCode").split(",");
+        //get all names to array
+        String[] names = Controller.getConfigParameter("appGlobal", "app.instancesNames").split(",");
+        //get index of id
+        int index = Arrays.asList(ids).indexOf(id);
+        //return name
+        return names[index];
+    }
+
+    public static void changeName(String id, String newName) {
+        //get all ids to array
+        String[] ids = Controller.getConfigParameter("appGlobal", "app.instancesCode").split(",");
+        //get all names to array
+        String[] names = Controller.getConfigParameter("appGlobal", "app.instancesNames").split(",");
+        //get index of id
+        int index = Arrays.asList(ids).indexOf(id);
+        //set new name
+        names[index] = newName;
+        //set new names
+        setConfigParameter("appGlobal", "app.instancesNames", String.join(",", names));
+    }
+
+    public static void restartApp() {
+        //close all windows
+        try { Instance.close(); } catch (Exception e) {}
+        try { InstanceSelect.close(); } catch (Exception e) {}
+        try { InstanceSettings.close(); } catch (Exception e) {}
+        try { GlobalSettingsPanel.close(); } catch (Exception e) {}
+
+        //restart app
+        App.main(null);
+    }
+
+    public static void deleteInstance(String id) {
+        //get all ids to array
+        String[] ids = Controller.getConfigParameter("appGlobal", "app.instancesCode").split(",");
+        //get all names to array
+        String[] names = Controller.getConfigParameter("appGlobal", "app.instancesNames").split(",");
+        //remove id
+        ids = Arrays.copyOf(ids, ids.length - 1);
+        //remove name
+        names = Arrays.copyOf(names, names.length - 1);
+        //set new ids
+        setConfigParameter("appGlobal", "app.instancesCode", String.join(",", ids));
+        //set new names
+        setConfigParameter("appGlobal", "app.instancesNames", String.join(",", names));
+        //delete conf file
+        File confFile = new File("./src/main/java/com/karlosoft/config/" + id + ".conf");
+        confFile.delete();
     }
 }

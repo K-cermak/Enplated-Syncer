@@ -121,7 +121,7 @@ public class Instance {
         settingsButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
         settingsButton.addActionListener(e ->
         {
-            //todo
+            InstanceSettings.changeSettings(instanceId);
         });
 
         panel.add(settingsButton);
