@@ -70,7 +70,7 @@ public class Instance {
         downloadButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
         downloadButton.addActionListener(e ->
         {
-            //todo
+            Controller.downloadGithub(instanceId);
         });
 
 

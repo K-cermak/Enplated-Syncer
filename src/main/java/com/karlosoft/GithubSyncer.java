@@ -74,6 +74,18 @@ public class GithubSyncer {
         }
     }
 
+    public static void pull(String folder, String instanceId) {
+        //pull only instanceId.zip
+        try {
+            execCmd("git branch -M main", folder);
+            execCmd("git fetch", folder);
+            execCmd("git checkout origin/main -- " + instanceId + ".zip", folder);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public static void deleteFolder(String folder) {
         File file = new File(folder);
         if (file.exists()) {

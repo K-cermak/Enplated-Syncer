@@ -286,6 +286,58 @@ public class Controller {
         Popup.showMessage(0, "Upload completed", "Instance successfully uploaded to GitHub");
     }
 
+    public static void downloadGithub(String instanceId) {
+        String folder = GithubSyncer.createFolder(instanceId);
+        String instanceFolder = getConfigParameter(instanceId, "folder");
+
+        RefreshableWindow.setTotalFiles(3);
+        RefreshableWindow.setText("Loading data, please wait...");
+
+        new Thread(() -> {
+            //init git
+            GithubSyncer.initializeGit(folder);
+            RefreshableWindow.addFile();
+            GithubSyncer.setDetails(folder, instanceId);
+            RefreshableWindow.addFile();
+
+            //download zip
+            GithubSyncer.pull(folder, instanceId);
+            RefreshableWindow.addFile();
+            RefreshableWindow.closeWindow();
+        }).start();
+
+        RefreshableWindow.run();
+        RefreshableWindow.resetData();
+
+        System.out.println("Continue");
+        //check if file exist
+        File file = new File(folder + "\\" + instanceId + ".zip");
+        if (file.exists()) {
+
+            RefreshableWindow.setTotalFiles(ZipUtils.numberOfFilesZip(folder + "\\" + instanceId + ".zip"));
+            RefreshableWindow.setText("Importing new files, please wait...");
+
+            new Thread(() -> {
+                //unzip
+                ZipUtils.deleteFolderData(instanceFolder);
+                ZipUtils.unzip(folder + "\\" + instanceId + ".zip", instanceFolder, true);
+
+                //delete folder
+                GithubSyncer.deleteFolder(folder);   
+                RefreshableWindow.closeWindow();
+            }).start();
+
+            RefreshableWindow.run();
+            RefreshableWindow.resetData();
+            Popup.showMessage(0, "Import complete", "Instance successfully imported from GitHub");
+
+        } else {
+            //delete folder
+            GithubSyncer.deleteFolder(folder);
+            Popup.showMessage(1, "Error", "Instance not found on GitHub. Is instance ID correct?");
+        }
+    }
+
     public static void changeId(String oldId, String newId) {
         //get all ids to array
         String[] ids = Controller.getConfigParameter("appGlobal", "app.instancesCode").split(",");

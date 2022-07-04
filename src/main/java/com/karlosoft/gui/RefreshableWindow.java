@@ -63,7 +63,7 @@ public class RefreshableWindow {
         panel.add(progressBar);
 
         //dialog
-        dialog = jop.createDialog("Exporting");
+        dialog = jop.createDialog("Please wait..");
         dialog.setSize(300, 100);
         dialog.setContentPane(scrollPane);
         dialog.setModal(true);
