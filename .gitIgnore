@@ -1,6 +1,5 @@
 src/main/java/com/karlosoft/config/*
 !src/main/java/com/karlosoft/config/appGlobal.default.conf
-src/main/java/com/karlosoft/github/*
 
 target/
 pom.xml.tag
