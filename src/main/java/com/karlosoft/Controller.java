@@ -250,4 +250,27 @@ public class Controller {
         File confFile = new File("./src/main/java/com/karlosoft/config/" + id + ".conf");
         confFile.delete();
     }
+
+    public static void uploadGithub(String instanceId) {
+        //create folder
+        String folder = GithubSyncer.createFolder(instanceId);
+        String instanceFolder = getConfigParameter(instanceId, "folder");
+
+        //add zip to it
+        ZipUtils appZip = new ZipUtils();
+        ZipUtils.setSourceFolder(instanceFolder);
+        appZip.generateFileList(new File(instanceFolder));
+        appZip.zipIt(folder + "\\" + instanceId + ".zip");
+
+        //initialize git in folder
+        GithubSyncer.initializeGit(folder);
+        GithubSyncer.setDetails(folder, instanceId);
+
+        //upload zip
+        GithubSyncer.push(folder);
+
+        //delete folder
+        System.out.println("done");
+        
+    }
 }

@@ -80,7 +80,7 @@ public class Instance {
         uploadButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
         uploadButton.addActionListener(e ->
         {
-            //todo
+            Controller.uploadGithub(instanceId);
         });
 
         //verify that github is set
