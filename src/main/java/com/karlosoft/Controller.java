@@ -134,6 +134,7 @@ public class Controller {
     }
 
     public static void exportInstance(String id, String location) {   
+        shutdownDatabase(id);
         //get instance location
         String instanceFolder = getConfigParameter(id, "folder");
         //pack to zip with timestamp
@@ -154,6 +155,7 @@ public class Controller {
 
         RefreshableWindow.run();
         RefreshableWindow.resetData();
+        startDatabase(id);
 
         Popup.showMessage(0, "Export complete", "Instance exported to " + location + "\\" + zipName);
     }
@@ -168,6 +170,7 @@ public class Controller {
     }
 
     public static void importInstance(String zipFile, String instanceId) {
+        shutdownDatabase(instanceId);
         String folder = getConfigParameter(instanceId, "folder");
 
         //import new
@@ -183,6 +186,7 @@ public class Controller {
 
         RefreshableWindow.run();
         RefreshableWindow.resetData();
+        startDatabase(instanceId);
 
         Popup.showMessage(0, "Import complete", "Instance imported from " + zipFile);
     }
@@ -249,6 +253,7 @@ public class Controller {
     }
 
     public static void uploadGithub(String instanceId) {
+        shutdownDatabase(instanceId);
         RefreshableWindow.setTotalFiles(4);
         RefreshableWindow.setText("Uploading to GitHub, please wait...");
 
@@ -283,10 +288,13 @@ public class Controller {
 
         RefreshableWindow.run();
         RefreshableWindow.resetData();
+        startDatabase(instanceId);
+
         Popup.showMessage(0, "Upload completed", "Instance successfully uploaded to GitHub");
     }
 
     public static void downloadGithub(String instanceId) {
+        shutdownDatabase(instanceId);
         String folder = GithubSyncer.createFolder(instanceId);
         String instanceFolder = getConfigParameter(instanceId, "folder");
 
@@ -313,7 +321,6 @@ public class Controller {
         //check if file exist
         File file = new File(folder + "\\" + instanceId + ".zip");
         if (file.exists()) {
-
             RefreshableWindow.setTotalFiles(ZipUtils.numberOfFilesZip(folder + "\\" + instanceId + ".zip"));
             RefreshableWindow.setText("Importing new files, please wait...");
 
@@ -336,6 +343,7 @@ public class Controller {
             GithubSyncer.deleteFolder(folder);
             Popup.showMessage(1, "Error", "Instance not found on GitHub. Is instance ID correct?");
         }
+        startDatabase(instanceId);
     }
 
     public static void changeId(String oldId, String newId) {
@@ -352,4 +360,43 @@ public class Controller {
         File confFile = new File("./src/main/java/com/karlosoft/config/" + oldId + ".conf");
         confFile.renameTo(new File("./src/main/java/com/karlosoft/config/" + newId + ".conf"));
     }
+
+    public static void shutdownDatabase(String instanceID) {
+        //get db property
+        String db = getConfigParameter("appGlobal", "app.dbPath");
+        System.out.println(db);
+        System.out.println(getConfigParameter(instanceID, "database"));
+        
+        if (!db.equals("") && getConfigParameter(instanceID, "database").equals("true")) {
+            System.out.println("Shutdown database");
+            try {
+                runBatCommand("mysql_stop.bat", db);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void startDatabase(String instanceID) {
+        //get db property
+        String db = getConfigParameter("appGlobal", "app.dbPath");
+        
+        if (!db.equals("") && getConfigParameter(instanceID, "database").equals("true")) {
+            try {
+                runBatCommand("mysql_start.bat", db);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void runBatCommand(String cmd, String folder) throws IOException {
+        Runtime.getRuntime().exec(
+            new String[] {"cmd", "/C", cmd},
+             null,
+             new File(folder)
+        );
+    }
+
+
 }
