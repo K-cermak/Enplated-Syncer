@@ -31,6 +31,10 @@
         }
     </style>
     <?php
+            
+        //***********************************************************
+        //                     ROUTING SYSTEM
+        //***********************************************************
         do {
             //new install
             if (!$_POST && ACCESS_CODE == "") {
@@ -44,7 +48,7 @@
                 if ($_POST["new-access-code"] == $_POST["new-access-code-repeat"] && ACCESS_CODE == "") {
                     //min 5 chars
                     if (strlen($_POST["new-access-code"]) >= 5) {
-                        replaceVariable(2, 'define("ACCESS_CODE", "' . $_POST["new-access-code"] . '");');
+                        replaceLine(2, 'define("ACCESS_CODE", "' . $_POST["new-access-code"] . '");');
                         echo generateMessage("success", "Access code updated! Please login.");
                     } else {
                         echo generateMessage("danger", "Access code must be at least 5 characters long.");
@@ -74,7 +78,9 @@
             if (isset($_GET["login"]) && $_POST) {
                 if (isset($_POST["access-code"]) && $_POST["access-code"] == ACCESS_CODE) {
                     $_SESSION["access-code"] = ACCESS_CODE;
-                    header("Location: " . $_SERVER["REQUEST_URI"]);
+                    $_SESSION["message"] = "Login successful";
+                    $_SESSION["message-type"] = "success";
+                    header("Location: esyncer-deploy.php");
                     die();
                 } else {
                     echo generateMessage("danger", "Access code is incorrect.");
@@ -95,7 +101,7 @@
                     if ($_POST["new-access-code"] == $_POST["new-access-code-repeat"]) {
                         //min 5 chars
                         if (strlen($_POST["new-access-code"]) >= 5) {
-                            replaceVariable(2, 'define("ACCESS_CODE", "' . $_POST["new-access-code"] . '");');
+                            replaceLine(2, 'define("ACCESS_CODE", "' . $_POST["new-access-code"] . '");');
                             echo generateMessage("success", "Access code updated! <a href='?logout'>Logout</a> and login again to apply changes.");
                             break;
                         } else {
@@ -155,8 +161,7 @@
                                 $tokenOrig = true;
                             }
                         }
-                    } while ($tokenOrig == false);
-
+                    } while ($tokenOrig == false && count(PROJECTS) != 0);
 
                     $secret = generateRandom(10);
                     $line = "        ['name' => '" . $_POST["project-name"] . "', 'folder' => '" . $_POST["project-folder"] . "', 'token' => '" . $token . "', 'secret' => '" . $secret . "'],";
@@ -168,6 +173,79 @@
                 } while (false);
             }
 
+            //delete a project
+            if (isset($_GET["delete-project"]) && isset($_SESSION["access-code"]) && $_SESSION["access-code"] == ACCESS_CODE) {
+                if (!isset(PROJECTS[$_GET["delete-project"]])) {
+                    echo generateMessage("warning", "Project not found");
+                    echo generateMainTop();
+                    echo generateMainBody();
+                } else {
+                    echo deleteProject($_GET["delete-project"]);
+                }
+
+                break;
+            }
+
+            if (isset($_GET["delete-project-submit"]) && isset($_SESSION["access-code"]) && $_SESSION["access-code"] == ACCESS_CODE) {
+                if (!isset(PROJECTS[$_GET["delete-project-submit"]])) {
+                    echo generateMessage("warning", "Project not found");
+                    echo generateMainTop();
+                    echo generateMainBody();
+                } else {
+                    deleteLine(5 + $_GET["delete-project-submit"]);
+                    $_SESSION["message"] = "Project succesfully deleted";
+                    $_SESSION["message-type"] = "success";
+                    header("Location: esyncer-deploy.php");
+                    die();
+                }
+                break;
+            }
+
+            //regenerate token and secret
+            if (isset($_GET["regenerate-token"]) && isset($_SESSION["access-code"]) && $_SESSION["access-code"] == ACCESS_CODE) {
+                if (!isset(PROJECTS[$_GET["regenerate-token"]])) {
+                    echo generateMessage("warning", "Project not found");
+                    echo generateMainTop();
+                    echo generateMainBody();
+                } else {
+                    echo regenerateToken($_GET["regenerate-token"]);
+                }
+
+                break;
+            }
+
+            if (isset($_GET["regenerate-token-submit"]) && isset($_SESSION["access-code"]) && $_SESSION["access-code"] == ACCESS_CODE) {
+                if (!isset(PROJECTS[$_GET["regenerate-token-submit"]])) {
+                    echo generateMessage("warning", "Project not found");
+                    echo generateMainTop();
+                    echo generateMainBody();
+                } else {
+                    $token = "";
+                    $tokenOrig = false;
+                    do {
+                        $token = generateRandom(8);
+                        for ($i = 0; $i < count(PROJECTS); $i++) {
+                            if (PROJECTS[$i]["token"] == $token) {
+                                $tokenOrig = false;
+                                break;
+                            } else {
+                                $tokenOrig = true;
+                            }
+                        }
+                    } while ($tokenOrig == false && count(PROJECTS) != 0);
+
+                    $secret = generateRandom(10);
+
+                    replaceLine(5 + $_GET["regenerate-token-submit"], '        ["name" => "' . PROJECTS[$_GET["regenerate-token-submit"]]["name"] . '", "folder" => "' . PROJECTS[$_GET["regenerate-token-submit"]]["folder"] . '", "token" => "' . $token . '", "secret" => "' . $secret . '"],');
+
+                    $_SESSION["message"] = "Token and secret of project <b>". PROJECTS[$_GET["regenerate-token-submit"]]["name"] ."</b> succesfully regenerated. New token is: <b>" . $token . "</b> and new secret is: <b>" . $secret . "</b>.";
+                    $_SESSION["message-type"] = "success";
+                    header("Location: esyncer-deploy.php");
+                    die();
+                }
+                break;
+            }
+
             //normal page
             if (!isset($_SESSION["access-code"]) || $_SESSION["access-code"] != ACCESS_CODE) {
                 //not logged
@@ -175,6 +253,12 @@
                 break;
             } else {
                 //logged
+                //notifications
+                if (isset($_SESSION["message"])) {
+                    echo generateMessage($_SESSION["message-type"], $_SESSION["message"]);
+                    unset($_SESSION["message"]);
+                    unset($_SESSION["message-type"]);
+                }
                 echo generateMainTop();
                 echo generateMainBody();
                 break;
@@ -183,12 +267,14 @@
         } while (false);
 
 
+
+
         //***********************************************************
         //             FUNCTIONS FOR GENERATE HTML
         //***********************************************************
 
         //FUNCTIONAL FUNCTIONS
-        function replaceVariable($lineNumber, $newLine) {
+        function replaceLine($lineNumber, $newLine) {
             $lineNumber = $lineNumber - 1;
             //rewrite line in file esyncer-vars.php
             $file = fopen("esyncer-vars.php", "r");
@@ -222,6 +308,30 @@
                 $lines[] = fgets($file);
                 if ($i == $lineNumber) {
                     $lines[$i] = $lines[$i] . $data . "\n";
+                }
+                $i++;
+            }
+
+            fclose($file);
+
+            //write new content
+            $file = fopen("esyncer-vars.php", "w");
+            foreach ($lines as $line) {
+                fwrite($file, $line);
+            }
+            fclose($file);
+        }
+
+        function deleteLine($lineNumber) {
+            $lineNumber = $lineNumber - 1;
+            //rewrite line in file esyncer-vars.php
+            $file = fopen("esyncer-vars.php", "r");
+            $lines = array();
+            $i = 0;
+            while(!feof($file)) {
+                $lines[] = fgets($file);
+                if ($i == $lineNumber) {
+                    $lines[$i] = "";
                 }
                 $i++;
             }
@@ -479,6 +589,56 @@
                                 <p class="card-text">Secret: <b>'. $secret .'</b></p>
                                 <a href="?" class="btn btn-link">Go to main page</a>
                                 <a href="?add-folder" class="btn btn-primary">Add another project</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>';
+        }
+
+        function deleteProject($projectIndex) {
+            return '
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 offset-md-3 mt-5">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Delete project</h5>
+                                Project name : <b>'. PROJECTS[$projectIndex]['name'] .'</b>
+                                <br>
+                                Project folder : <b>'. PROJECTS[$projectIndex]['folder'] .'</b>
+
+                                <br>
+                                <br>
+
+                                <p class="card-text">Are you sure you want to delete this project?</p>
+                                <a href="?" class="btn btn-link">No, go back</a>
+                                <a href="?delete-project-submit='. $projectIndex .'" class="btn btn-danger ms-5">Yes, delete project</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>';
+        }
+
+        function regenerateToken($projectIndex) {
+            return '
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 offset-md-3 mt-5">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Regenerate token and secret</h5>
+                                Project name : <b>'. PROJECTS[$projectIndex]['name'] .'</b>
+                                <br>
+                                Project folder : <b>'. PROJECTS[$projectIndex]['folder'] .'</b>
+
+                                <br>
+                                <br>
+
+                                <p class="card-text">Are you sure you want to regenerate token and secret? Old token and secret will stop work.</p>
+                                <a href="?" class="btn btn-link">No, go back</a>
+                                <a href="?regenerate-token-submit='. $projectIndex .'" class="btn btn-danger ms-5">Yes, regenerate token and secret</a>
                             </div>
                         </div>
                     </div>

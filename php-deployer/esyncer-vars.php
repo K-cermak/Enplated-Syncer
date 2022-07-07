@@ -1,8 +1,8 @@
 <?php
-    define("ACCESS_CODE", "testt");
+    define("ACCESS_CODE", "12345");
     define("PROJECTS", [
 
-        ['name' => 'test 2', 'folder' => 'test', 'token' => '9PK4WHN1', 'secret' => 'XCWYRGW7Z4'],
-        ['name' => 'test 1', 'folder' => 'testt', 'token' => 'S65QB5CG', 'secret' => 'DM33BDSF49'],
+        ['name' => 'Test project 2', 'folder' => '/var/html/www/test', 'token' => 'ERTUVJT4', 'secret' => '56J70BKCIJ'],
+        ['name' => 'Test project', 'folder' => '/var/html/www/test', 'token' => '6UDOQRRN', 'secret' => 'J8TOBDARD9'],
     ]);
 ?>
