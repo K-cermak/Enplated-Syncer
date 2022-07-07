@@ -14,8 +14,22 @@
     <meta name="color-scheme" content="light dark">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-nightfall.min.css" rel="stylesheet" media="(prefers-color-scheme: light)">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
+    <style>
+        .blur {
+            filter: blur(5px);
+            transition: 0.5s;
+            padding: 0px 20px 0px 10px;
+        }
+        .blur:hover {
+            filter: blur(0px);
+        }
+        .navbar-collapse {
+            justify-content: center;
+        }
+    </style>
     <?php
         do {
             //new install
@@ -69,12 +83,12 @@
 
 
             //change access code
-            if (isset($_GET["change-access"])) {
+            if (isset($_GET["change-access"]) && isset($_SESSION["access-code"]) && $_SESSION["access-code"] == ACCESS_CODE) {
                 echo changeAccessCode();
                 break;
             }
 
-            if (isset($_GET["change-access-code"])) {
+            if (isset($_GET["change-access-code"]) && isset($_SESSION["access-code"]) && $_SESSION["access-code"] == ACCESS_CODE) {
                 //verify that old access code is correct
                 if (isset($_POST["old-access-code"]) && $_POST["old-access-code"] == ACCESS_CODE) {
                     //verify that new access code is correct
@@ -97,18 +111,142 @@
                 break;
             }
 
+
+            //add a new project
+            if (isset($_GET["add-folder"]) && isset($_SESSION["access-code"]) && $_SESSION["access-code"] == ACCESS_CODE) {
+                echo addProject();
+                break;
+            }
+
+            if (isset($_GET["add-folder-submit"]) && isset($_SESSION["access-code"]) && $_SESSION["access-code"] == ACCESS_CODE) {
+                do {
+                    //verify that project name is more than 3 chars
+                    if (isset($_POST["project-name"]) && strlen($_POST["project-name"]) < 3) {
+                        echo generateMessage("danger", "Project name must be at least 3 characters long.");
+                        echo addProject($_POST["project-name"], $_POST["project-folder"]);
+                        break 2;
+                    }
+
+                    //verify that project name is not already taken
+                    for ($i = 0; $i < count(PROJECTS); $i++) {
+                        if (PROJECTS[$i]["name"] == $_POST["project-name"]) {
+                            echo generateMessage("danger", "Project name already exists.");
+                            echo addProject($_POST["project-name"], $_POST["project-folder"]);
+                            break 3;
+                        }
+                    }
+
+                    //verify that folder is not empty
+                    if (isset($_POST["project-folder"]) && strlen($_POST["project-folder"]) < 1) {
+                        echo generateMessage("danger", "Project folder cannot be empty.");
+                        echo addProject($_POST["project-name"], $_POST["project-folder"]);
+                        break 2;
+                    }
+
+                    $token = "";
+                    $tokenOrig = false;
+                    do {
+                        $token = generateRandom(8);
+                        for ($i = 0; $i < count(PROJECTS); $i++) {
+                            if (PROJECTS[$i]["token"] == $token) {
+                                $tokenOrig = false;
+                                break;
+                            } else {
+                                $tokenOrig = true;
+                            }
+                        }
+                    } while ($tokenOrig == false);
+
+
+                    $secret = generateRandom(10);
+                    $line = "        ['name' => '" . $_POST["project-name"] . "', 'folder' => '" . $_POST["project-folder"] . "', 'token' => '" . $token . "', 'secret' => '" . $secret . "'],";
+                    addToLine(4, $line);
+
+                    echo projectAdded($token, $secret);
+
+                    break 2;
+                } while (false);
+            }
+
+            //normal page
             if (!isset($_SESSION["access-code"]) || $_SESSION["access-code"] != ACCESS_CODE) {
                 //not logged
                 echo generateLoginForm();
                 break;
             } else {
                 //logged
-                echo generateMainContent();
+                echo generateMainTop();
+                echo generateMainBody();
                 break;
             }
                 
         } while (false);
 
+
+        //***********************************************************
+        //             FUNCTIONS FOR GENERATE HTML
+        //***********************************************************
+
+        //FUNCTIONAL FUNCTIONS
+        function replaceVariable($lineNumber, $newLine) {
+            $lineNumber = $lineNumber - 1;
+            //rewrite line in file esyncer-vars.php
+            $file = fopen("esyncer-vars.php", "r");
+            $lines = array();
+            $i = 0;
+            while(!feof($file)) {
+                $lines[] = fgets($file);
+                if ($i == $lineNumber) {
+                    $lines[$i] = $newLine . "\n";
+                }
+                $i++;
+            }
+
+            fclose($file);
+
+            //write new content
+            $file = fopen("esyncer-vars.php", "w");
+            foreach ($lines as $line) {
+                fwrite($file, $line);
+            }
+            fclose($file);
+        }
+
+        function addToLine($lineNumber, $data) {
+            $lineNumber = $lineNumber - 1;
+            //rewrite line in file esyncer-vars.php
+            $file = fopen("esyncer-vars.php", "r");
+            $lines = array();
+            $i = 0;
+            while(!feof($file)) {
+                $lines[] = fgets($file);
+                if ($i == $lineNumber) {
+                    $lines[$i] = $lines[$i] . $data . "\n";
+                }
+                $i++;
+            }
+
+            fclose($file);
+
+            //write new content
+            $file = fopen("esyncer-vars.php", "w");
+            foreach ($lines as $line) {
+                fwrite($file, $line);
+            }
+            fclose($file);
+        }
+
+        function generateRandom($numberOfChars) {
+            $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $charactersLength = strlen($characters);
+            $randomString = '';
+            for ($i = 0; $i < $numberOfChars; $i++) {
+                $randomString .= $characters[rand(0, $charactersLength - 1)];
+            }
+            return $randomString;
+        }
+
+        //LOGIN AND WELCOME FUNCTIONS
         function generateLoginForm() {
             return '
             <div class="container">
@@ -180,29 +318,7 @@
             ';
         }
 
-        function replaceVariable($lineNumber, $newLine) {
-            $lineNumber = $lineNumber - 1;
-            //rewrite line in file esyncer-vars.php
-            $file = fopen("esyncer-vars.php", "r");
-            $lines = array();
-            $i = 0;
-            while(!feof($file)) {
-                $lines[] = fgets($file);
-                if ($i == $lineNumber) {
-                    $lines[$i] = $newLine . "\n";
-                }
-                $i++;
-            }
-
-            fclose($file);
-
-            //write new content
-            $file = fopen("esyncer-vars.php", "w");
-            foreach ($lines as $line) {
-                fwrite($file, $line);
-            }
-            fclose($file);
-        }
+        //LOGGED FUNCTIONS
 
         function generateLoggedHeader() {
             return '
@@ -225,6 +341,77 @@
             ';
         }
 
+        function generateMainTop() {
+            $url = $_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']) . "/" . "esyncer-deploy.php";
+
+            return '
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-md-6 offset-md-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Welcome back in Enplated Syncer 👋</h5>
+                                <p class="card-text">Need help? You can find more on <a href="https://github.com/K-cermak/Enplated-Syncer" target="_blank">GitHub</a>.</p>
+                                <a href="?add-folder" class="btn btn-primary">Add a new folder for Deploy</a>
+                                <br>
+                                <h5 class="mt-5">Your URL for Enplated Syncer:</h5>
+                                <code>'. $url .'</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            ';
+        }
+
+        function generateMainBody() {
+            $html = '<div class="container mt-5">';
+
+            if (count(PROJECTS) == 0) {
+                $html .= '<div class="row">
+                    <div class="col-md-6 offset-md-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">No project found</h5>
+                                <p class="card-text">You need to add a project first.</p>
+                                <a href="?add-folder" class="btn btn-primary">Add a new folder for Deploy</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>';
+            } else {
+                for ($i = 0; $i < count(PROJECTS); $i++) {
+                    $html .= '
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <h5 class="card-title">'. PROJECTS[$i]['name'] .'</h5>
+                                        <p class="card-text mt-2">Folder: <b>'. PROJECTS[$i]['folder'] .'</b></p>
+                                    </div>
+
+                                    <div class="col mt-3">
+                                        <p class="card-text mb-0 mt-3">Token: <b class="blur">'. PROJECTS[$i]['token'] .'</b></p>
+                                        <p class="card-text mb-0">Secret: <b class="blur">'. PROJECTS[$i]['secret'] .'</b></p>
+                                    </div>
+                                    <div class="col mt-3 text-center">
+                                        <a href="?regenerate-token='. $i .'" class="btn btn-primary btn-sm">Regenerate Token and Secret</a>
+                                        <br>
+                                        <a href="?delete-project='. $i .'" class="btn btn-danger btn-sm mt-3">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ';
+                }
+            }
+
+            $html .= '</div>';
+
+            return $html;
+        }
+
+        //OTHER PAGES
         function changeAccessCode() {
             return '
             <div class="container">
@@ -253,27 +440,50 @@
             </div>';
         }
 
-        function generateMainContent() {
-            $url = $_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']) . "/" . "esyncer-deploy.php";
-
+        function addProject($projectName = "", $projectFolder = "") {
+            $currentFile = __FILE__;
             return '
-            <div class="container mt-5">
+            <div class="container">
                 <div class="row">
-                    <div class="col-md-6 offset-md-3">
+                    <div class="col-md-6 offset-md-3 mt-5">
+                        <form action="?add-folder-submit" method="post">
+                            <div class="form-group">
+                                <label for="project-name">Project Name:</label>
+                                <input type="text" class="form-control" id="project-name" name="project-name" placeholder="Project Name" value="'. $projectName . '">
+                            </div>
+
+                            <div class="form-group mt-4">
+                                <label for="project-folder">Project Folder:</label>
+                                <p>Current file location: <b>'. $currentFile .'</b></p>
+                                <p>Enplated Syncer does not validate if the folder exists or if you have privilage to access and write to it.</p>
+                                <input type="text" class="form-control" id="project-folder" name="project-folder" placeholder="Example: /var/www/html/..." value="'. $projectFolder . '">
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary mt-5">Add Project</button>
+                        </form>
+                    </div>
+                </div>
+            </div>';
+        }
+
+        function projectAdded($token, $secret) {
+            return '
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 offset-md-3 mt-5">
                         <div class="card">
                             <div class="card-body text-center">
-                                <h5 class="card-title">Welcome back in Enplated Syncer 👋</h5>
-                                <p class="card-text">Need help? You can find more on <a href="https://github.com/K-cermak/Enplated-Syncer" target="_blank">GitHub</a>.</p>
-                                <a href="?sync" class="btn btn-primary">Add a new folder for Deploy</a>
-                                <br>
-                                <h5 class="mt-5">Your URL for Enplated Syncer:</h5>
-                                <code>'. $url .'</code>
+                                <h5 class="card-title">Project added</h5>
+                                <p class="card-text">Your project has been added. You can now deploy your project in Enplated Syncer app.</p>
+                                <p class="card-text">Token: <b>'. $token .'</b></p>
+                                <p class="card-text">Secret: <b>'. $secret .'</b></p>
+                                <a href="?" class="btn btn-link">Go to main page</a>
+                                <a href="?add-folder" class="btn btn-primary">Add another project</a>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            ';
+            </div>';
         }
     ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
