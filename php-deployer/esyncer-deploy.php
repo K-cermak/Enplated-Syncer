@@ -1,4 +1,5 @@
 <?php
+    header('Content-Type: text/html; charset=utf-8');
     session_start();
     require_once "esyncer-vars.php";
 ?>
@@ -30,8 +31,157 @@
             justify-content: center;
         }
     </style>
-    <?php
-            
+    <?php            
+        //***********************************************************
+        //                    UPLOAD FILE SYSTEM
+        //***********************************************************
+
+        if ($_POST && isset($_GET["deploy"])) {
+            do {
+                $pathForExtract = "extract/";
+                //check lock
+                if (file_exists($pathForExtract . "esyncer.lock")) {
+                    echo "error-locked";
+                    break;
+                } else {
+                    //create file
+                    file_put_contents($pathForExtract . "esyncer.lock", "");
+                }
+
+                //verify that token exist
+                if (!isset($_POST["token"]) || !isset($_POST["secret"])) {
+                    echo "missing-token-or-secret";
+                    break;
+                }
+
+                //verify that token is correct
+                $token = $_POST["token"];
+                $secret = $_POST["secret"];
+                $project = null;
+
+                for ($i = 0; $i < count(PROJECTS); $i++) {
+                    if (PROJECTS[$i]["token"] == $token && PROJECTS[$i]["secret"] == $secret) {
+                        $project = PROJECTS[$i];
+                        break;
+                    }
+                }
+
+                if ($project == null) {
+                    echo "invalid-token-or-secret";
+                    break;
+                }
+
+                if (!isset($_FILES["file"])) {
+                    echo "missing-file";
+                    break;
+                }
+
+                //save file to folder
+                $file = $_FILES["file"];
+                $file_name = $file["name"];
+                $file_tmp_name = $file["tmp_name"];
+                $file_size = $file["size"];
+                $file_error = $file["error"];
+
+                if ($file_error != 0) {
+                    echo "file-error";
+                    break;
+                }
+
+                //check if zip
+                $file_ext = explode(".", $file_name);
+                $file_ext = strtolower(end($file_ext));
+                if ($file_ext != "zip") {
+                    echo "invalid-file-extension";
+                    break;
+                }
+
+                //save
+                $file_path = $pathForExtract . $file_name;
+                if (!move_uploaded_file($file_tmp_name, $file_path)) {
+                    echo "file-error";
+                    break;
+                }
+
+                //delete content of folder
+                $dir = $project["folder"];
+                delete($dir, $dir);
+
+                //unzip file to folder
+                $zip = new ZipArchive;
+                $res = $zip->open($file_path);
+                if ($res === TRUE) {
+                    $zip->extractTo($pathForExtract);
+                    $zip->close();
+                } else {
+                    echo "file-error";
+                    break;
+                }
+
+                //get all folders in /extract/
+                $dir = $pathForExtract;
+                $files = scandir($dir);
+                $folders = [];
+                foreach ($files as $file) {
+                    if (is_dir($dir . $file)) {
+                        if ($file != "." && $file != "..") {
+                            $folders[] = $file;
+                        }
+                    }
+                }
+
+                //open first index from folders
+                $dir = $pathForExtract . $folders[0];
+
+                //move all files from /extract/ to /project/
+                recurse_copy($dir, $project["folder"]);
+
+                //delete unzip folder
+                delete($pathForExtract, $pathForExtract);
+
+                echo "ok-done";
+                
+            } while (false);
+            exit();
+        }
+
+        //function
+        function delete($dir, $originalFolder) {
+            if (is_dir($dir)) {
+                $objects = scandir($dir);
+                foreach ($objects as $object) {
+                    if ($object != "." && $object != "..") {
+                        if (filetype($dir."/".$object) == "dir") {
+                            delete($dir."/".$object, $dir);
+                        } else {
+                            unlink($dir."/".$object);
+                        }
+                    }
+                }
+                reset($objects);
+                if ($dir != $originalFolder) {
+                    rmdir($dir);
+                }
+            }
+        }
+
+        function recurse_copy($src, $dst) { 
+            $dir = opendir($src); 
+            @mkdir($dst); 
+            while(false !== ( $file = readdir($dir)) ) { 
+                if (( $file != '.' ) && ( $file != '..' )) { 
+                    if ( is_dir($src . '/' . $file) ) { 
+                        recurse_copy($src . '/' . $file,$dst . '/' . $file); 
+                    } 
+                    else { 
+                        copy($src . '/' . $file,$dst . '/' . $file); 
+                    } 
+                } 
+            } 
+            closedir($dir); 
+        } 
+
+
         //***********************************************************
         //                     ROUTING SYSTEM
         //***********************************************************
