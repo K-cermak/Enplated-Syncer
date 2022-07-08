@@ -26,11 +26,6 @@ public class Requests {
         //replace spaces with %20
         url = url.replace(" ", "%20");
 
-		//delete ./ from zipFile
-		//zipFile = zipFile.replace("./", "");
-
-        System.out.println("Sending zip file to " + url);
-        
         //file
 		File file = new File(zipFile);
 

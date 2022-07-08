@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 
 
 public class Controller {
+    //FILE MODIFIERS
     public static String getConfigParameter(String file, String parameter) {
         Properties prop = new Properties();
         String fileName = "./src/main/java/com/karlosoft/config/" + file + ".conf";
@@ -68,42 +69,6 @@ public class Controller {
         setConfigParameter("appGlobal", property, newParameter);
     }
 
-    public static void globalSettingsPanel() {
-        GlobalSettingsPanel.run();
-    }
-
-    public static void addInstance() {
-        AddInstance.run();
-    }
-
-    public static boolean folderExists(String path) {
-        if (new java.io.File(path).exists()) {
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean checkIdExist(String id) {
-        if (new java.io.File("./src/main/java/com/karlosoft/config/" + id + ".conf").exists()) {
-            return true;
-        }
-        return false;
-    }
-
-    public static String generateRandomId() {
-        String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 5; i++) {
-            int index = (int) (Math.random() * chars.length());
-            sb.append(chars.charAt(index));
-        }
-        if (checkIdExist(sb.toString())) {
-            return generateRandomId();
-        } else {
-            return sb.toString();
-        }
-    }
-
     public static boolean createDefaultConfFile(String name) {
         String fileName = "./src/main/java/com/karlosoft/config/" + name + ".conf";
         try (Writer writer = new java.io.FileWriter(fileName, Charset.forName("utf-8"))) {
@@ -121,99 +86,19 @@ public class Controller {
         }
     }
 
-    public static void runInstance(String id, String name) {
-        Instance.run(id, name);
-    } 
-
-    public static void closeInstanceSelect() {
-        InstanceSelect.close();
-    }
-
-    public static String selectFolder() {
-        return Popup.selectFolder();
-    }
-
-    public static void exportInstance(String id, String location) {   
-        //get instance location
-        String instanceFolder = getConfigParameter(id, "folder");
-        if (ZipUtils.numberOfFiles(instanceFolder) < 1) {
-            Popup.showMessage(1, "Error", "Folder is empty. Please add files to folder before exporting.");
-            return;
-        }
-
-        shutdownDatabase(id);
-
-        //pack to zip with timestamp
-        String zipName = "INSTANCE-EXPORT-"+ id + "-" + System.currentTimeMillis() + ".zip";
-
-
-        RefreshableWindow.setTotalFiles(Controller.numberOfFiles(id));
-        RefreshableWindow.setText("Exporting instance, please wait...");
-       
-
-        new Thread(() -> {
-            ZipUtils appZip = new ZipUtils();
-            ZipUtils.setSourceFolder(instanceFolder);
-            appZip.generateFileList(new File(instanceFolder));
-            appZip.zipIt(location + "\\" + zipName, true);
-            RefreshableWindow.closeWindow();
-        }).start();
-
-        RefreshableWindow.run();
-        RefreshableWindow.resetData();
-        startDatabase(id);
-
-        Popup.showMessage(0, "Export complete", "Instance exported to " + location + "\\" + zipName);
-    }
-
-    public static void refreshWindow() {
-        RefreshableWindow.addFile();
-    }
-
-    public static int numberOfFiles(String instanceId) {
-        String instanceFolder = getConfigParameter(instanceId, "folder");
-        return ZipUtils.numberOfFiles(instanceFolder);
-    }
-
-    public static void importInstance(String zipFile, String instanceId) {
-        shutdownDatabase(instanceId);
-        String folder = getConfigParameter(instanceId, "folder");
-
-        //import new
-        RefreshableWindow.setTotalFiles(ZipUtils.numberOfFilesZip(zipFile));
-        RefreshableWindow.setText("Importing new files, please wait...");
-
-        new Thread(() -> {
-            ZipUtils.deleteFolderData(folder);
-            ZipUtils.unzip(zipFile, folder, true);
-
-            RefreshableWindow.closeWindow();
-        }).start();
-
-        RefreshableWindow.run();
-        RefreshableWindow.resetData();
-        startDatabase(instanceId);
-
-        Popup.showMessage(0, "Import complete", "Instance imported from " + zipFile);
-    }
-
-    public static void closeApp() {
-        System.exit(0);
-    }
-
-    public static void changeFolder(String id, String folder) {
-        setConfigParameter(id, "folder", folder);
-    }
-
-    public static String getNameFromId(String id) {
+    public static void changeId(String oldId, String newId) {
         //get all ids to array
         String[] ids = Controller.getConfigParameter("appGlobal", "app.instancesCode").split(",");
-        //get all names to array
-        String[] names = Controller.getConfigParameter("appGlobal", "app.instancesNames").split(",");
         //get index of id
-        int index = Arrays.asList(ids).indexOf(id);
-        //return name
-        return names[index];
+        int index = Arrays.asList(ids).indexOf(oldId);
+        //set new id
+        ids[index] = newId;
+        //set new id
+        setConfigParameter("appGlobal", "app.instancesCode", String.join(",", ids));
+
+        //change conf file
+        File confFile = new File("./src/main/java/com/karlosoft/config/" + oldId + ".conf");
+        confFile.renameTo(new File("./src/main/java/com/karlosoft/config/" + newId + ".conf"));
     }
 
     public static void changeName(String id, String newName) {
@@ -229,15 +114,8 @@ public class Controller {
         setConfigParameter("appGlobal", "app.instancesNames", String.join(",", names));
     }
 
-    public static void restartApp() {
-        //close all windows
-        try { Instance.close(); } catch (Exception e) {}
-        try { InstanceSelect.close(); } catch (Exception e) {}
-        try { InstanceSettings.close(); } catch (Exception e) {}
-        try { GlobalSettingsPanel.close(); } catch (Exception e) {}
-
-        //restart app
-        App.main(null);
+    public static void changeFolder(String id, String folder) {
+        setConfigParameter(id, "folder", folder);
     }
 
     public static void deleteInstance(String id) {
@@ -258,6 +136,113 @@ public class Controller {
         confFile.delete();
     }
 
+
+    //FUNCTIONAL
+    public static String generateRandomId() {
+        String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 5; i++) {
+            int index = (int) (Math.random() * chars.length());
+            sb.append(chars.charAt(index));
+        }
+        if (checkIdExist(sb.toString())) {
+            return generateRandomId();
+        } else {
+            return sb.toString();
+        }
+    }
+
+    public static int numberOfFiles(String instanceId) {
+        String instanceFolder = getConfigParameter(instanceId, "folder");
+        return ZipUtils.numberOfFiles(instanceFolder);
+    }
+
+    public static String getNameFromId(String id) {
+        //get all ids to array
+        String[] ids = Controller.getConfigParameter("appGlobal", "app.instancesCode").split(",");
+        //get all names to array
+        String[] names = Controller.getConfigParameter("appGlobal", "app.instancesNames").split(",");
+        //get index of id
+        int index = Arrays.asList(ids).indexOf(id);
+        //return name
+        return names[index];
+    }
+
+    public static String selectFolder() {
+        return Popup.selectFolder();
+    }
+
+
+    //APP CLOSE AND RESTART
+    public static void closeApp() {
+        System.exit(0);
+    }
+    
+    public static void restartApp() {
+        //close all windows
+        try { Instance.close(); } catch (Exception e) {}
+        try { InstanceSelect.close(); } catch (Exception e) {}
+        try { InstanceSettings.close(); } catch (Exception e) {}
+        try { GlobalSettingsPanel.close(); } catch (Exception e) {}
+
+        //restart app
+        App.main(null);
+    }
+
+    
+    //CHECKERS
+    public static boolean folderExists(String path) {
+        if (new java.io.File(path).exists()) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean checkIdExist(String id) {
+        if (new java.io.File("./src/main/java/com/karlosoft/config/" + id + ".conf").exists()) {
+            return true;
+        }
+        return false;
+    }
+
+
+    //DATABASE 
+    public static void shutdownDatabase(String instanceID) {
+        //get db property
+        String db = getConfigParameter("appGlobal", "app.dbPath");
+        
+        if (!db.equals("") && getConfigParameter(instanceID, "database").equals("true")) {
+            try {
+                runBatCommand("mysql_stop.bat", db);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void startDatabase(String instanceID) {
+        //get db property
+        String db = getConfigParameter("appGlobal", "app.dbPath");
+        
+        if (!db.equals("") && getConfigParameter(instanceID, "database").equals("true")) {
+            try {
+                runBatCommand("mysql_start.bat", db);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void runBatCommand(String cmd, String folder) throws IOException {
+        Runtime.getRuntime().exec(
+            new String[] {"cmd", "/C", cmd},
+             null,
+             new File(folder)
+        );
+    }
+
+
+    //GITHUB
     public static void uploadGithub(String instanceId) {
         String instanceFolder = getConfigParameter(instanceId, "folder");
         if (ZipUtils.numberOfFiles(instanceFolder) < 1) {
@@ -356,53 +341,79 @@ public class Controller {
         startDatabase(instanceId);
     }
 
-    public static void changeId(String oldId, String newId) {
-        //get all ids to array
-        String[] ids = Controller.getConfigParameter("appGlobal", "app.instancesCode").split(",");
-        //get index of id
-        int index = Arrays.asList(ids).indexOf(oldId);
-        //set new id
-        ids[index] = newId;
-        //set new id
-        setConfigParameter("appGlobal", "app.instancesCode", String.join(",", ids));
 
-        //change conf file
-        File confFile = new File("./src/main/java/com/karlosoft/config/" + oldId + ".conf");
-        confFile.renameTo(new File("./src/main/java/com/karlosoft/config/" + newId + ".conf"));
-    }
-
-    public static void shutdownDatabase(String instanceID) {
-        //get db property
-        String db = getConfigParameter("appGlobal", "app.dbPath");
-        
-        if (!db.equals("") && getConfigParameter(instanceID, "database").equals("true")) {
-            try {
-                runBatCommand("mysql_stop.bat", db);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    //IMPORT / EXPORT
+    public static void exportInstance(String id, String location) {   
+        //get instance location
+        String instanceFolder = getConfigParameter(id, "folder");
+        if (ZipUtils.numberOfFiles(instanceFolder) < 1) {
+            Popup.showMessage(1, "Error", "Folder is empty. Please add files to folder before exporting.");
+            return;
         }
+
+        shutdownDatabase(id);
+
+        //pack to zip with timestamp
+        String zipName = "INSTANCE-EXPORT-"+ id + "-" + System.currentTimeMillis() + ".zip";
+
+
+        RefreshableWindow.setTotalFiles(Controller.numberOfFiles(id));
+        RefreshableWindow.setText("Exporting instance, please wait...");
+       
+
+        new Thread(() -> {
+            ZipUtils appZip = new ZipUtils();
+            ZipUtils.setSourceFolder(instanceFolder);
+            appZip.generateFileList(new File(instanceFolder));
+            appZip.zipIt(location + "\\" + zipName, true);
+            RefreshableWindow.closeWindow();
+        }).start();
+
+        RefreshableWindow.run();
+        RefreshableWindow.resetData();
+        startDatabase(id);
+
+        Popup.showMessage(0, "Export complete", "Instance exported to " + location + "\\" + zipName);
     }
 
-    public static void startDatabase(String instanceID) {
-        //get db property
-        String db = getConfigParameter("appGlobal", "app.dbPath");
-        
-        if (!db.equals("") && getConfigParameter(instanceID, "database").equals("true")) {
-            try {
-                runBatCommand("mysql_start.bat", db);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    public static void importInstance(String zipFile, String instanceId) {
+        shutdownDatabase(instanceId);
+        String folder = getConfigParameter(instanceId, "folder");
+
+        //import new
+        RefreshableWindow.setTotalFiles(ZipUtils.numberOfFilesZip(zipFile));
+        RefreshableWindow.setText("Importing new files, please wait...");
+
+        new Thread(() -> {
+            ZipUtils.deleteFolderData(folder);
+            ZipUtils.unzip(zipFile, folder, true);
+
+            RefreshableWindow.closeWindow();
+        }).start();
+
+        RefreshableWindow.run();
+        RefreshableWindow.resetData();
+        startDatabase(instanceId);
+
+        Popup.showMessage(0, "Import complete", "Instance imported from " + zipFile);
     }
 
-    public static void runBatCommand(String cmd, String folder) throws IOException {
-        Runtime.getRuntime().exec(
-            new String[] {"cmd", "/C", cmd},
-             null,
-             new File(folder)
-        );
+
+    //GUI
+    public static void globalSettingsPanel() {
+        GlobalSettingsPanel.run();
+    }
+
+    public static void addInstance() {
+        AddInstance.run();
+    }
+
+    public static void runInstance(String id, String name) {
+        Instance.run(id, name);
+    } 
+
+    public static void closeInstanceSelect() {
+        InstanceSelect.close();
     }
 
     public static void deploy(String instanceId) {
@@ -448,8 +459,9 @@ public class Controller {
         RefreshableWindow.resetData();
 
         startDatabase(instanceId);
-
     }
 
-
+    public static void refreshWindow() {
+        RefreshableWindow.addFile();
+    }
 }
