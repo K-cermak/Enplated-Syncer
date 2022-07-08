@@ -106,7 +106,7 @@ public class Instance {
         deployButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
         deployButton.addActionListener(e ->
         {
-            //todo
+            Controller.deploy(instanceId);
         });
 
         if (Controller.getConfigParameter(instanceId, "url").equals("false")) {

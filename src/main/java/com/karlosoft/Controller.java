@@ -134,9 +134,15 @@ public class Controller {
     }
 
     public static void exportInstance(String id, String location) {   
-        shutdownDatabase(id);
         //get instance location
         String instanceFolder = getConfigParameter(id, "folder");
+        if (ZipUtils.numberOfFiles(instanceFolder) < 1) {
+            Popup.showMessage(1, "Error", "Folder is empty. Please add files to folder before exporting.");
+            return;
+        }
+
+        shutdownDatabase(id);
+
         //pack to zip with timestamp
         String zipName = "INSTANCE-EXPORT-"+ id + "-" + System.currentTimeMillis() + ".zip";
 
@@ -253,6 +259,12 @@ public class Controller {
     }
 
     public static void uploadGithub(String instanceId) {
+        String instanceFolder = getConfigParameter(instanceId, "folder");
+        if (ZipUtils.numberOfFiles(instanceFolder) < 1) {
+            Popup.showMessage(1, "Error", "Folder is empty. Please add files to folder before uploading.");
+            return;
+        }
+
         shutdownDatabase(instanceId);
         RefreshableWindow.setTotalFiles(4);
         RefreshableWindow.setText("Uploading to GitHub, please wait...");
@@ -260,7 +272,6 @@ public class Controller {
         new Thread(() -> {
             //create folder
             String folder = GithubSyncer.createFolder(instanceId);
-            String instanceFolder = getConfigParameter(instanceId, "folder");
 
             //add zip to it
             RefreshableWindow.addFile();
@@ -317,7 +328,6 @@ public class Controller {
         RefreshableWindow.run();
         RefreshableWindow.resetData();
 
-        System.out.println("Continue");
         //check if file exist
         File file = new File(folder + "\\" + instanceId + ".zip");
         if (file.exists()) {
@@ -364,11 +374,8 @@ public class Controller {
     public static void shutdownDatabase(String instanceID) {
         //get db property
         String db = getConfigParameter("appGlobal", "app.dbPath");
-        System.out.println(db);
-        System.out.println(getConfigParameter(instanceID, "database"));
         
         if (!db.equals("") && getConfigParameter(instanceID, "database").equals("true")) {
-            System.out.println("Shutdown database");
             try {
                 runBatCommand("mysql_stop.bat", db);
             } catch (IOException e) {
@@ -396,6 +403,52 @@ public class Controller {
              null,
              new File(folder)
         );
+    }
+
+    public static void deploy(String instanceId) {
+        shutdownDatabase(instanceId);
+        String instanceFolder = getConfigParameter(instanceId, "folder");
+
+        if (ZipUtils.numberOfFiles(instanceFolder) < 1) {
+            Popup.showMessage(1, "Error", "Folder is empty. Please add files to folder before deploying.");
+            return;
+        }
+
+        RefreshableWindow.setTotalFiles(3);
+        RefreshableWindow.setText("Deploying, please wait...");
+
+        new Thread(() -> {
+            String folder = GithubSyncer.createFolder(instanceId);
+            String url = getConfigParameter(instanceId, "url");
+            String token = getConfigParameter(instanceId, "token");
+            String secret = getConfigParameter(instanceId, "secret");
+
+            //zip instance to folder
+            RefreshableWindow.addFile();
+            ZipUtils appZip = new ZipUtils();
+            ZipUtils.setSourceFolder(instanceFolder);
+            appZip.generateFileList(new File(instanceFolder));
+            appZip.zipIt(folder + "\\" + instanceId + ".zip", false);
+
+            RefreshableWindow.addFile();
+            try {
+                Requests.sendZip(url, token, secret, folder + "\\" + instanceId + ".zip");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            //delete folder
+            RefreshableWindow.addFile();
+            GithubSyncer.deleteFolder(folder);
+
+            RefreshableWindow.closeWindow();
+        }).start();
+
+        RefreshableWindow.run();
+        RefreshableWindow.resetData();
+
+        startDatabase(instanceId);
+
     }
 
 

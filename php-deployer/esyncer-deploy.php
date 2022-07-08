@@ -4,6 +4,176 @@
     require_once "esyncer-vars.php";
 ?>
 
+<?php            
+    //***********************************************************
+    //                    UPLOAD FILE SYSTEM
+    // - 200 - ok
+    // - 400 - error
+    //***********************************************************
+
+    if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_GET["deploy"])) {
+        http_response_code(400);
+        do {
+            $pathForExtract = "extract/";
+            //check lock
+            if (file_exists($pathForExtract . "esyncer.lock")) {
+                echo "error-locked";
+                http_response_code(400);
+                break;
+            } else {
+                //create file
+                file_put_contents($pathForExtract . "esyncer.lock", "");
+            }
+
+            //verify that token exist
+            if (!isset($_GET["token"]) || !isset($_GET["secret"])) {
+                echo "missing-token-or-secret";
+                http_response_code(400);
+                break;
+            }
+
+            //verify that token is correct
+            $token = $_GET["token"];
+            $secret = $_GET["secret"];
+            $project = null;
+
+            for ($i = 0; $i < count(PROJECTS); $i++) {
+                if (PROJECTS[$i]["token"] == $token && PROJECTS[$i]["secret"] == $secret) {
+                    $project = PROJECTS[$i];
+                    break;
+                }
+            }
+
+            if ($project == null) {
+                echo "invalid-token-or-secret";
+                http_response_code(400);
+                break;
+            }
+
+            if (!isset($_FILES["file"])) {
+                echo "missing-file";
+                http_response_code(400);
+                break;
+            }
+
+            //save file to folder
+            $file = $_FILES["file"];
+            $file_name = $file["name"];
+            $file_tmp_name = $file["tmp_name"];
+            $file_size = $file["size"];
+            $file_error = $file["error"];
+
+            if ($file_error != 0) {
+                echo "file-error";
+                http_response_code(400);
+                break;
+            }
+
+            //check if zip
+            $file_ext = explode(".", $file_name);
+            $file_ext = strtolower(end($file_ext));
+            if ($file_ext != "zip") {
+                echo "invalid-file-extension";
+                http_response_code(400);
+                break;
+            }
+
+            //save
+            $file_path = $pathForExtract . $file_name;
+            if (!move_uploaded_file($file_tmp_name, $file_path)) {
+                echo "file-error";
+                http_response_code(400);
+                break;
+            }
+
+            //delete content of folder
+            $dir = $project["folder"];
+            delete($dir, $dir);
+
+            //unzip file to folder
+            $zip = new ZipArchive;
+            $res = $zip->open($file_path);
+            if ($res === TRUE) {
+                $zip->extractTo($pathForExtract);
+                $zip->close();
+            } else {
+                echo "file-error";
+                http_response_code(400);
+                break;
+            }
+
+            //get all folders in /extract/
+            $dir = $pathForExtract;
+            $files = scandir($dir);
+            $folders = [];
+            foreach ($files as $file) {
+                if (is_dir($dir . $file)) {
+                    if ($file != "." && $file != "..") {
+                        $folders[] = $file;
+                    }
+                }
+            }
+
+            //open first index from folders
+            $dir = $pathForExtract . $folders[0];
+
+            //move all files from /extract/ to /project/
+            recurse_copy($dir, $project["folder"]);
+
+            //delete unzip folder
+            delete($pathForExtract, $pathForExtract);
+
+            echo "ok-done";
+            http_response_code(200);
+            
+        } while (false);
+
+        //delete lock
+        if (file_exists($pathForExtract . "esyncer.lock")) {
+            unlink($pathForExtract . "esyncer.lock");
+        }
+
+        exit();
+    }
+
+    //functions
+    function delete($dir, $originalFolder) {
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ($object != "." && $object != "..") {
+                    if (filetype($dir."/".$object) == "dir") {
+                        delete($dir."/".$object, $dir);
+                    } else {
+                        unlink($dir."/".$object);
+                    }
+                }
+            }
+            reset($objects);
+            if ($dir != $originalFolder) {
+                rmdir($dir);
+            }
+        }
+    }
+
+    function recurse_copy($src, $dst) { 
+        $dir = opendir($src); 
+        @mkdir($dst); 
+        while(false !== ( $file = readdir($dir)) ) { 
+            if (( $file != '.' ) && ( $file != '..' )) { 
+                if ( is_dir($src . '/' . $file) ) { 
+                    recurse_copy($src . '/' . $file,$dst . '/' . $file); 
+                } 
+                else { 
+                    copy($src . '/' . $file,$dst . '/' . $file); 
+                } 
+            } 
+        } 
+        closedir($dir); 
+    }
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,155 +201,8 @@
             justify-content: center;
         }
     </style>
-    <?php            
-        //***********************************************************
-        //                    UPLOAD FILE SYSTEM
-        //***********************************************************
 
-        if ($_POST && isset($_GET["deploy"])) {
-            do {
-                $pathForExtract = "extract/";
-                //check lock
-                if (file_exists($pathForExtract . "esyncer.lock")) {
-                    echo "error-locked";
-                    break;
-                } else {
-                    //create file
-                    file_put_contents($pathForExtract . "esyncer.lock", "");
-                }
-
-                //verify that token exist
-                if (!isset($_POST["token"]) || !isset($_POST["secret"])) {
-                    echo "missing-token-or-secret";
-                    break;
-                }
-
-                //verify that token is correct
-                $token = $_POST["token"];
-                $secret = $_POST["secret"];
-                $project = null;
-
-                for ($i = 0; $i < count(PROJECTS); $i++) {
-                    if (PROJECTS[$i]["token"] == $token && PROJECTS[$i]["secret"] == $secret) {
-                        $project = PROJECTS[$i];
-                        break;
-                    }
-                }
-
-                if ($project == null) {
-                    echo "invalid-token-or-secret";
-                    break;
-                }
-
-                if (!isset($_FILES["file"])) {
-                    echo "missing-file";
-                    break;
-                }
-
-                //save file to folder
-                $file = $_FILES["file"];
-                $file_name = $file["name"];
-                $file_tmp_name = $file["tmp_name"];
-                $file_size = $file["size"];
-                $file_error = $file["error"];
-
-                if ($file_error != 0) {
-                    echo "file-error";
-                    break;
-                }
-
-                //check if zip
-                $file_ext = explode(".", $file_name);
-                $file_ext = strtolower(end($file_ext));
-                if ($file_ext != "zip") {
-                    echo "invalid-file-extension";
-                    break;
-                }
-
-                //save
-                $file_path = $pathForExtract . $file_name;
-                if (!move_uploaded_file($file_tmp_name, $file_path)) {
-                    echo "file-error";
-                    break;
-                }
-
-                //delete content of folder
-                $dir = $project["folder"];
-                delete($dir, $dir);
-
-                //unzip file to folder
-                $zip = new ZipArchive;
-                $res = $zip->open($file_path);
-                if ($res === TRUE) {
-                    $zip->extractTo($pathForExtract);
-                    $zip->close();
-                } else {
-                    echo "file-error";
-                    break;
-                }
-
-                //get all folders in /extract/
-                $dir = $pathForExtract;
-                $files = scandir($dir);
-                $folders = [];
-                foreach ($files as $file) {
-                    if (is_dir($dir . $file)) {
-                        if ($file != "." && $file != "..") {
-                            $folders[] = $file;
-                        }
-                    }
-                }
-
-                //open first index from folders
-                $dir = $pathForExtract . $folders[0];
-
-                //move all files from /extract/ to /project/
-                recurse_copy($dir, $project["folder"]);
-
-                //delete unzip folder
-                delete($pathForExtract, $pathForExtract);
-
-                echo "ok-done";
-                
-            } while (false);
-            exit();
-        }
-
-        //function
-        function delete($dir, $originalFolder) {
-            if (is_dir($dir)) {
-                $objects = scandir($dir);
-                foreach ($objects as $object) {
-                    if ($object != "." && $object != "..") {
-                        if (filetype($dir."/".$object) == "dir") {
-                            delete($dir."/".$object, $dir);
-                        } else {
-                            unlink($dir."/".$object);
-                        }
-                    }
-                }
-                reset($objects);
-                if ($dir != $originalFolder) {
-                    rmdir($dir);
-                }
-            }
-        }
-
-        function recurse_copy($src, $dst) { 
-            $dir = opendir($src); 
-            @mkdir($dst); 
-            while(false !== ( $file = readdir($dir)) ) { 
-                if (( $file != '.' ) && ( $file != '..' )) { 
-                    if ( is_dir($src . '/' . $file) ) { 
-                        recurse_copy($src . '/' . $file,$dst . '/' . $file); 
-                    } 
-                    else { 
-                        copy($src . '/' . $file,$dst . '/' . $file); 
-                    } 
-                } 
-            } 
-            closedir($dir); 
-        } 
+<?php
 
 
         //***********************************************************
@@ -603,6 +626,7 @@
 
         function generateMainTop() {
             $url = $_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']) . "/" . "esyncer-deploy.php";
+            $protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
 
             return '
             <div class="container mt-5">
@@ -615,7 +639,7 @@
                                 <a href="?add-folder" class="btn btn-primary">Add a new folder for Deploy</a>
                                 <br>
                                 <h5 class="mt-5">Your URL for Enplated Syncer:</h5>
-                                <code>'. $url .'</code>
+                                <code>'. $protocol . $url .'</code>
                             </div>
                         </div>
                     </div>

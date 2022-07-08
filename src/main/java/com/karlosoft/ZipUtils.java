@@ -13,7 +13,7 @@ import java.util.zip.ZipOutputStream;
 public class ZipUtils {
 
     private List <String> fileList;
-    private static String SOURCE_FOLDER = "E:\\Data\\test"; // SourceFolder path
+    private static String SOURCE_FOLDER = ""; // SourceFolder path
 
     public ZipUtils() {
         fileList = new ArrayList < String > ();
