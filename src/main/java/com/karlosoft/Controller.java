@@ -19,6 +19,52 @@ import java.nio.file.Paths;
 
 public class Controller {
     //FILE MODIFIERS
+    public static void generateDefault() {
+        //check if folder config exists
+        String path = Controller.getWorkingDirectory() + "/config";
+        File file = new File(path);
+        if (!file.exists()) {
+            file.mkdir();
+        }
+
+        //check if folder github exists
+        path = Controller.getWorkingDirectory() + "/github";
+        file = new File(path);
+        if (!file.exists()) {
+            file.mkdir();
+        }
+
+        //generate appGlobal.conf
+        path = Controller.getWorkingDirectory() + "/config/appGlobal.conf";
+        file = new File(path);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            //write default config
+            try {
+                Writer writer = Files.newBufferedWriter(Paths.get(path), Charset.forName("UTF-8"));
+                BufferedWriter bufferedWriter = new BufferedWriter(writer);
+                bufferedWriter.write("app.instancesNames=");
+                bufferedWriter.newLine();
+                bufferedWriter.write("app.instancesCode=");
+                bufferedWriter.newLine();
+                bufferedWriter.write("app.githubEmail=");
+                bufferedWriter.newLine();
+                bufferedWriter.write("app.githubPassword=");
+                bufferedWriter.newLine();
+                bufferedWriter.write("app.dbPath=");
+                bufferedWriter.newLine();
+                bufferedWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static String getConfigParameter(String file, String parameter) {
         Properties prop = new Properties();
         String fileName = getWorkingDirectory() + "/config/" + file + ".conf";
@@ -70,15 +116,31 @@ public class Controller {
     }
 
     public static boolean createDefaultConfFile(String name) {
-        String fileName = getWorkingDirectory() + "config/" + name + ".conf";
-        try (Writer writer = new java.io.FileWriter(fileName, Charset.forName("utf-8"))) {
-            writer.write("folder=folder\n");
-            writer.write("database=false\n");
-            writer.write("github=false\n");
-            writer.write("url=false\n");
-            writer.write("token=false\n");
-            writer.write("secret=false\n");
-            writer.close();     
+        String fileName = getWorkingDirectory() + "/config/" + name + ".conf";
+
+        File file = new File(fileName);
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Writer writer = Files.newBufferedWriter(Paths.get(fileName), Charset.forName("UTF-8"));
+            BufferedWriter bufferedWriter = new BufferedWriter(writer);
+            bufferedWriter.write("folder=folder");
+            bufferedWriter.newLine();
+            bufferedWriter.write("database=false");
+            bufferedWriter.newLine();
+            bufferedWriter.write("github=false");
+            bufferedWriter.newLine();
+            bufferedWriter.write("url=false");
+            bufferedWriter.newLine();
+            bufferedWriter.write("token=false");
+            bufferedWriter.newLine();
+            bufferedWriter.write("secret=false");
+            bufferedWriter.newLine();
+            bufferedWriter.close();   
             return true;
 
         } catch (IOException ex) {

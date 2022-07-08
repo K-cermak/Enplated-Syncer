@@ -153,7 +153,7 @@ public class AddInstance {
                 }
 
                 String gitHubUrl = "";
-                if (Popup.showConfirm("GitHub repsitory", "Do you want to add a GitHub repository?")) {
+                if (Popup.showConfirm("GitHub repository", "Do you want to add a GitHub repository?")) {
                     while (gitHubUrl.equals("")) {
                         gitHubUrl = Popup.simpleInput("GitHub repository", "Enter the url of the repository");
                         if (gitHubUrl.equals("")) {
