@@ -21,7 +21,7 @@ public class Controller {
     //FILE MODIFIERS
     public static String getConfigParameter(String file, String parameter) {
         Properties prop = new Properties();
-        String fileName = "./src/main/java/com/karlosoft/config/" + file + ".conf";
+        String fileName = getWorkingDirectory() + "/config/" + file + ".conf";
 
         //use utf-8
         Charset charset = StandardCharsets.UTF_8;
@@ -37,7 +37,7 @@ public class Controller {
     public static void setConfigParameter(String file, String parameter, String newValue) {
         //replace \ with \\
         newValue = newValue.replace("\\", "\\\\\\\\");
-        String fileName = "./src/main/java/com/karlosoft/config/" + file + ".conf";
+        String fileName = getWorkingDirectory() + "/config/" + file + ".conf";
         String line = null;
         try {
             line = new String(Files.readAllBytes(Paths.get(fileName)), "UTF-8");
@@ -70,7 +70,7 @@ public class Controller {
     }
 
     public static boolean createDefaultConfFile(String name) {
-        String fileName = "./src/main/java/com/karlosoft/config/" + name + ".conf";
+        String fileName = getWorkingDirectory() + "config/" + name + ".conf";
         try (Writer writer = new java.io.FileWriter(fileName, Charset.forName("utf-8"))) {
             writer.write("folder=folder\n");
             writer.write("database=false\n");
@@ -97,8 +97,8 @@ public class Controller {
         setConfigParameter("appGlobal", "app.instancesCode", String.join(",", ids));
 
         //change conf file
-        File confFile = new File("./src/main/java/com/karlosoft/config/" + oldId + ".conf");
-        confFile.renameTo(new File("./src/main/java/com/karlosoft/config/" + newId + ".conf"));
+        File confFile = new File(getWorkingDirectory() + "/config/" + oldId + ".conf");
+        confFile.renameTo(new File(getWorkingDirectory() + "/config/" + newId + ".conf"));
     }
 
     public static void changeName(String id, String newName) {
@@ -132,12 +132,16 @@ public class Controller {
         //set new names
         setConfigParameter("appGlobal", "app.instancesNames", String.join(",", names));
         //delete conf file
-        File confFile = new File("./src/main/java/com/karlosoft/config/" + id + ".conf");
+        File confFile = new File(getWorkingDirectory() + "/config/" + id + ".conf");
         confFile.delete();
     }
 
 
     //FUNCTIONAL
+    public static String getWorkingDirectory() {
+        return System.getProperty("user.dir");
+    }
+
     public static String generateRandomId() {
         String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         StringBuilder sb = new StringBuilder();
@@ -199,7 +203,7 @@ public class Controller {
     }
 
     public static boolean checkIdExist(String id) {
-        if (new java.io.File("./src/main/java/com/karlosoft/config/" + id + ".conf").exists()) {
+        if (new java.io.File(getWorkingDirectory() + "/config/" + id + ".conf").exists()) {
             return true;
         }
         return false;

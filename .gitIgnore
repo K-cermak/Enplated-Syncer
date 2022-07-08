@@ -1,5 +1,5 @@
-src/main/java/com/karlosoft/config/*
-!src/main/java/com/karlosoft/config/appGlobal.default.conf
+config/*
+!config/appGlobal.default.conf
 
 target/
 pom.xml.tag

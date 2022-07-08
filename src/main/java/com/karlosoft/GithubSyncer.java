@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class GithubSyncer {
     public static String createFolder(String InstanceId) {
-        String path = "./src/main/java/com/karlosoft/github/" + InstanceId;
+        String path = Controller.getWorkingDirectory() + "/github/" + InstanceId;
         File file = new File(path);
         if (!file.exists()) {
             file.mkdir();
