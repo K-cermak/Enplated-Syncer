@@ -73,8 +73,14 @@ public class Controller {
             file.mkdir();
         }
 
-        try(InputStream in = new URL("https://mirror.k-cermak.com/data/enplated-syncer/png-favicon.png").openStream()){
-            Files.copy(in, Paths.get(Controller.getWorkingDirectory() + "/images/png-favicon.png"));
+        //check if file exists
+        path = Controller.getWorkingDirectory() + "/images/png-favicon.png";
+        file = new File(path);
+        if (!file.exists()) {
+            //copy file
+            try(InputStream in = new URL("https://mirror.k-cermak.com/data/enplated-syncer/png-favicon.png").openStream()){
+                Files.copy(in, Paths.get(Controller.getWorkingDirectory() + "/images/png-favicon.png"));
+            }
         }
     }
 
