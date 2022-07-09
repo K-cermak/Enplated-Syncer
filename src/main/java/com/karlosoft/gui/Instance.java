@@ -136,6 +136,7 @@ public class Instance {
                 Popup.closeOption();
             }
         });
+        dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
         dialog.setVisible(true);
     }
 

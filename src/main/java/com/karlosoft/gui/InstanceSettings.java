@@ -116,6 +116,7 @@ public class InstanceSettings {
         dialog.setSize(300, 600);
         dialog.setLocationRelativeTo(null);
         dialog.setModal(true);
+        dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
         dialog.setVisible(true);
     }
 
@@ -181,6 +182,7 @@ public class InstanceSettings {
         dialog.setSize(300, 400);
         dialog.setLocationRelativeTo(null);
         dialog.setModal(true);
+        dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
         dialog.setVisible(true);
     }
 
@@ -227,6 +229,7 @@ public class InstanceSettings {
         dialog.setSize(300, 400);
         dialog.setLocationRelativeTo(null);
         dialog.setModal(true);
+        dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
         dialog.setVisible(true);
     }
 
@@ -316,6 +319,7 @@ public class InstanceSettings {
         dialog.setSize(300, 400);
         dialog.setLocationRelativeTo(null);
         dialog.setModal(true);
+        dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
         dialog.setVisible(true);
     }
 
@@ -463,6 +467,7 @@ public class InstanceSettings {
         dialog.setSize(300, 550);
         dialog.setLocationRelativeTo(null);
         dialog.setModal(true);
+        dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
         dialog.setVisible(true);
     }
 
@@ -527,6 +532,7 @@ public class InstanceSettings {
         dialog.setSize(500, 500);
         dialog.setLocationRelativeTo(null);
         dialog.setModal(true);
+        dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
         dialog.setVisible(true);
     }
 }

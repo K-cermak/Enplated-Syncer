@@ -49,7 +49,14 @@ public class Popup {
 
     public static String selectFolder() {
         //select folder on drive with jfilechoser
-        JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser = new JFileChooser() {
+            @Override
+            protected JDialog createDialog( Component parent ) throws HeadlessException {
+                JDialog dialog = super.createDialog( parent );
+                dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
+                return dialog;
+            }
+        };
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.showOpenDialog(null);
         if (chooser.getSelectedFile() != null) {
@@ -60,7 +67,14 @@ public class Popup {
 
     public static String selectFile(String extension) {
         //select file on drive with jfilechoser
-        JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser = new JFileChooser() {
+            @Override
+            protected JDialog createDialog( Component parent ) throws HeadlessException {
+                JDialog dialog = super.createDialog( parent );
+                dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
+                return dialog;
+            }
+        };
         chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter(extension, extension));
         chooser.showOpenDialog(null);
         if (chooser.getSelectedFile() != null) {
@@ -107,6 +121,7 @@ public class Popup {
         dialog.setSize(300, 200);
         dialog.setLocationRelativeTo(null);
         dialog.setModal(true);
+        dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
         dialog.setVisible(true);
     }
 }

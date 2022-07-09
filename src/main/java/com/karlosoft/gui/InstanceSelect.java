@@ -58,6 +58,7 @@ public class InstanceSelect {
         dialog.setSize(1000, 450);
         dialog.setContentPane(scrollPane);
         dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
         dialog.setVisible(true);
     }
 

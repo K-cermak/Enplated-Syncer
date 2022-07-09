@@ -71,6 +71,7 @@ public class GlobalSettingsPanel {
         dialog = jop.createDialog("Global settings - Enplated Syncer");
         dialog.setSize(1000, 450);
         dialog.setContentPane(panel);
+        dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
         dialog.setVisible(true);
     }
 

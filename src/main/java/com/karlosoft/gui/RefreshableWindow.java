@@ -1,6 +1,9 @@
 package com.karlosoft.gui;
 
 import javax.swing.*;
+
+import com.karlosoft.Controller;
+
 import java.awt.*;
 
 public class RefreshableWindow {
@@ -68,6 +71,7 @@ public class RefreshableWindow {
         dialog.setContentPane(scrollPane);
         dialog.setModal(true);
         dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
         dialog.setVisible(true);
     }
 

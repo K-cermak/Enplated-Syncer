@@ -8,8 +8,10 @@ import java.util.Properties;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
-
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -19,7 +21,7 @@ import java.nio.file.Paths;
 
 public class Controller {
     //FILE MODIFIERS
-    public static void generateDefault() {
+    public static void generateDefault() throws MalformedURLException, IOException {
         //check if folder config exists
         String path = Controller.getWorkingDirectory() + "/config";
         File file = new File(path);
@@ -62,6 +64,17 @@ public class Controller {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        //check if folder images exists
+        path = Controller.getWorkingDirectory() + "/images";
+        file = new File(path);
+        if (!file.exists()) {
+            file.mkdir();
+        }
+
+        try(InputStream in = new URL("https://mirror.k-cermak.com/data/enplated-syncer/png-favicon.png").openStream()){
+            Files.copy(in, Paths.get(Controller.getWorkingDirectory() + "/images/png-favicon.png"));
         }
     }
 

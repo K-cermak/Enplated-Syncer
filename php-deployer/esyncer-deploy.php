@@ -183,6 +183,7 @@
     <title>Enplated Syncer - Deploy</title>
 
     <meta name="color-scheme" content="light dark">
+    <link rel="icon" type="image/png" href="https://mirror.k-cermak.com/data/enplated-syncer/png-favicon.png"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-nightfall.min.css" rel="stylesheet" media="(prefers-color-scheme: light)">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
