@@ -39,7 +39,7 @@ public class GlobalSettingsPanel {
 
         
         //database path
-        JTextArea databasePathLabel = new JTextArea("                                 Database path:\n"+ folder +"");
+        JTextArea databasePathLabel = new JTextArea("                                    XAMPP path:\n"+ folder +"");
         databasePathLabel.setEditable(false);
         databasePathLabel.setBackground(new Color(240, 240, 240));
         databasePathLabel.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 20));
@@ -52,7 +52,7 @@ public class GlobalSettingsPanel {
             String newFolder = Controller.selectFolder();
             if (!newFolder.equals("") && newFolder != null) {
                 folder = newFolder;
-                databasePathLabel.setText("                                 Database path:\n"+ folder +"");
+                databasePathLabel.setText("                                    XAMPP path:\n"+ folder +"");
             }
         });
         panel.add(databasePathButton);

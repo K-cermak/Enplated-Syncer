@@ -49,7 +49,7 @@ public class InstanceSettings {
         changeFolderButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
         changeFolderButton.addActionListener(e ->
         {
-            if (Popup.showConfirm("Change folder", "Are you sure you want to change the folder? This operation will not delete the current folder, but the new folder should be named the same as the current folder. The current folder is: " + Controller.getConfigParameter(instanceId, "folder"))) {
+            if (Popup.showConfirm("Change folder", "Are you sure you want to change the folder? This operation will not delete the current folder, but the new folder should be named the same as the current folder.\nThe current folder is: " + Controller.getConfigParameter(instanceId, "folder"))) {
                 String newFolder = Popup.selectFolder();
                 if (!newFolder.equals("") && newFolder != null) {
                     Controller.changeFolder(instanceId, newFolder);

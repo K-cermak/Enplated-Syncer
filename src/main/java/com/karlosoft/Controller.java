@@ -294,6 +294,15 @@ public class Controller {
         return false;
     }
 
+    public static boolean isGitInstalled() {
+        try {
+            Process process = Runtime.getRuntime().exec("git --version");
+            process.waitFor();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     //DATABASE 
     public static void shutdownDatabase(String instanceID) {
@@ -334,6 +343,11 @@ public class Controller {
     //GITHUB
     public static void uploadGithub(String instanceId) {
         String instanceFolder = getConfigParameter(instanceId, "folder");
+        if (!folderExists(instanceFolder)) {
+            Popup.showMessage(1, "An error has occurred", "The instance folder does not exist");
+            return;
+        }
+
         if (ZipUtils.numberOfFiles(instanceFolder) < 1) {
             Popup.showMessage(1, "Error", "Folder is empty. Please add files to folder before uploading.");
             return;
@@ -387,6 +401,11 @@ public class Controller {
         shutdownDatabase(instanceId);
         String folder = GithubSyncer.createFolder(instanceId);
         String instanceFolder = getConfigParameter(instanceId, "folder");
+
+        if (!folderExists(instanceFolder)) {
+            Popup.showMessage(1, "An error has occurred", "The instance folder does not exist");
+            return;
+        }
 
         RefreshableWindow.setTotalFiles(3);
         RefreshableWindow.setText("Loading data, please wait...");
@@ -454,6 +473,12 @@ public class Controller {
     public static void exportInstance(String id, String location) {   
         //get instance location
         String instanceFolder = getConfigParameter(id, "folder");
+
+        if (!folderExists(instanceFolder)) {
+            Popup.showMessage(1, "An error has occurred", "The instance folder does not exist");
+            return;
+        }
+
         if (ZipUtils.numberOfFiles(instanceFolder) < 1) {
             Popup.showMessage(1, "Error", "Folder is empty. Please add files to folder before exporting.");
             return;
@@ -492,8 +517,14 @@ public class Controller {
     }
 
     public static void importInstance(String zipFile, String instanceId) {
-        shutdownDatabase(instanceId);
         String folder = getConfigParameter(instanceId, "folder");
+
+        if (!folderExists(folder)) {
+            Popup.showMessage(1, "An error has occurred", "The instance folder does not exist");
+            return;
+        }
+
+        shutdownDatabase(instanceId);
 
         //import new
         RefreshableWindow.setTotalFiles(ZipUtils.numberOfFilesZip(zipFile));
@@ -538,8 +569,14 @@ public class Controller {
     }
 
     public static void deploy(String instanceId) {
-        shutdownDatabase(instanceId);
         String instanceFolder = getConfigParameter(instanceId, "folder");
+
+        if (!folderExists(instanceFolder)) {
+            Popup.showMessage(1, "An error has occurred", "The instance folder does not exist");
+            return;
+        }
+
+        shutdownDatabase(instanceId);
 
         if (ZipUtils.numberOfFiles(instanceFolder) < 1) {
             Popup.showMessage(1, "Error", "Folder is empty. Please add files to folder before deploying.");

@@ -89,9 +89,15 @@ public class Instance {
             uploadButton.setEnabled(false);
             downloadButton.setEnabled(false);
         } else {
+            //check if git is installed
+            if (!Controller.isGitInstalled()) {
+                Popup.showMessage(2, "Git is not installed", "Synchronization with GitHub was disabled because Git is not installed. Please install Git and restart Enplated Syncer.");
+                uploadButton.setEnabled(true);
+                downloadButton.setEnabled(true);
+            }
+
             //check if github credientials are set
             if (Controller.getConfigParameter("appGlobal", "app.githubEmail").equals("") || Controller.getConfigParameter("appGlobal", "app.githubPassword").equals("anObject")) {
-                //print error
                 Popup.showMessage(2, "Github credientials are not set", "Synchronization with GitHub was disabled because the login credentials were not set in the global settings.");
                 uploadButton.setEnabled(false);
                 downloadButton.setEnabled(false);
