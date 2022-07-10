@@ -13,6 +13,7 @@ public class GlobalSettingsPanel {
 
     public static void run() {
         folder = Controller.getConfigParameter("appGlobal", "app.dbPath");
+        
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(4, 2, 30, 30));  
         JOptionPane jop = new JOptionPane();

@@ -55,6 +55,15 @@ public class InstanceSelect {
             }
         }
 
+        //global info button
+        JButton globalInfoButton = new JButton("About Enplated Syncer");
+        globalInfoButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
+        globalInfoButton.addActionListener(e ->
+        {
+            Controller.globalInfoPanel();
+        });
+        panel.add(globalInfoButton);
+
         dialog = jop.createDialog("Select your syncer instance - Enplated Syncer " + Controller.getCurrentVersion());
         dialog.setSize(1000, 450);
         dialog.setContentPane(scrollPane);

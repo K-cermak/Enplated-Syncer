@@ -11,17 +11,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.awt.Desktop;
 
 
 public class Controller {
     //FILE MODIFIERS
     public static void generateDefault() throws MalformedURLException, IOException {
+        boolean newInstall = false;
         //check if folder config exists
         String path = Controller.getWorkingDirectory() + "/config";
         File file = new File(path);
@@ -42,6 +46,7 @@ public class Controller {
         if (!file.exists()) {
             try {
                 file.createNewFile();
+                newInstall = true;
             } catch (IOException e) {
                 Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
             }
@@ -81,6 +86,10 @@ public class Controller {
             try(InputStream in = new URL("https://mirror.k-cermak.com/data/enplated-syncer/png-favicon.png").openStream()){
                 Files.copy(in, Paths.get(Controller.getWorkingDirectory() + "/images/png-favicon.png"));
             }
+        }
+
+        if (newInstall) {
+            firstInstall();
         }
     }
 
@@ -219,6 +228,22 @@ public class Controller {
 
 
     //FUNCTIONAL
+    public static void openUrl(String url) {
+        try {
+            Desktop.getDesktop().browse(new URI(url));
+        } catch (URISyntaxException | IOException e) {
+            Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
+        }
+    }
+
+    public static void firstInstall() {
+        Popup.showMessage(4, "Welcome to Enplated Syncer", "Thank you for installing it and I hope you will be satisfied with it.");
+        Popup.showMessage(4, "Welcome to Enplated Syncer", "Disclaimer: Enplated Syncer is distributed completely free of charge and is not covered by any warranties.\nEnplated Syncer is in a testing phase and therefore may not be fully optimized for your system.");
+        Popup.showMessage(4, "Welcome to Enplated Syncer", "Although highly unlikely, Enplated Syncer manipulates your files on the drive.\nTherefore, you should always have at least 1 backup of your data in case Enplated Syncer encounters an error and starts manipulating files other than those it has the right to.");
+        Popup.showMessage(4, "Welcome to Enplated Syncer", "All guides can be found both on GitHub (github.com/K-cermak/Enplated-Syncer) and on the web (Enplated-Syncer.k-cermak.com).");
+
+    }
+
     public static String getCurrentVersion() {
         return "1.0.0";
     }
@@ -552,6 +577,10 @@ public class Controller {
 
 
     //GUI
+    public static void globalInfoPanel() {
+        GlobalInformationPanel.run();
+    }
+
     public static void globalSettingsPanel() {
         GlobalSettingsPanel.run();
     }

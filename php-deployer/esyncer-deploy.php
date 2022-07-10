@@ -636,7 +636,7 @@
                         <div class="card">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Welcome back in Enplated Syncer 👋</h5>
-                                <p class="card-text">Need help? You can find more on <a href="https://github.com/K-cermak/Enplated-Syncer" target="_blank">GitHub</a>.</p>
+                                <p class="card-text">Need help? You can find more on <a href="https://github.com/K-cermak/Enplated-Syncer" target="_blank">GitHub</a> or <a href="https://enplated-syncer.k-cermak.com/" target="_blank">Enplated-Syncer.k-cermak.com</a>.</p>
                                 <a href="?add-folder" class="btn btn-primary">Add a new folder for Deploy</a>
                                 <br>
                                 <h5 class="mt-5">Your URL for Enplated Syncer:</h5>
