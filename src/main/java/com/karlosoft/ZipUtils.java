@@ -10,6 +10,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import com.karlosoft.gui.Popup;
+
 public class ZipUtils {
 
     private List <String> fileList;
@@ -60,7 +62,7 @@ public class ZipUtils {
             try {
                 zos.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
             }
         }
     }

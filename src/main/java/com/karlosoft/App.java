@@ -12,9 +12,9 @@ public class App
         try {
             Controller.generateDefault();
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
         }
         
         String[] instancesName = Controller.getConfigParameter("appGlobal", "app.instancesNames").split(",");
@@ -24,7 +24,7 @@ public class App
         try { 
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            e.printStackTrace();
+            Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
         }
 
         InstanceSelect.run(instancesName, instancesCodes);

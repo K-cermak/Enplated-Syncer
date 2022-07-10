@@ -55,7 +55,7 @@ public class RefreshableWindow {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
                 }
                 progressBar.setValue(currentFile);
             }

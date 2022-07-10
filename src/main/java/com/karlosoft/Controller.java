@@ -43,7 +43,7 @@ public class Controller {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+                Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
             }
 
             //write default config
@@ -62,7 +62,7 @@ public class Controller {
                 bufferedWriter.newLine();
                 bufferedWriter.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
             }
         }
 
@@ -94,7 +94,7 @@ public class Controller {
         try {
             prop.load(Files.newBufferedReader(path, charset));
         } catch (IOException e) {
-            e.printStackTrace();
+            Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
         }
         return prop.getProperty(parameter);
     }
@@ -141,7 +141,7 @@ public class Controller {
         try {
             file.createNewFile();
         } catch (IOException e) {
-            e.printStackTrace();
+            Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
         }
 
         try {
@@ -304,7 +304,7 @@ public class Controller {
             try {
                 runBatCommand("mysql_stop.bat", db);
             } catch (IOException e) {
-                e.printStackTrace();
+                Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
             }
         }
     }
@@ -317,7 +317,7 @@ public class Controller {
             try {
                 runBatCommand("mysql_start.bat", db);
             } catch (IOException e) {
-                e.printStackTrace();
+                Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
             }
         }
     }
@@ -371,7 +371,7 @@ public class Controller {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
             }
             RefreshableWindow.closeWindow();
         }).start();
@@ -406,7 +406,7 @@ public class Controller {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
             }
             RefreshableWindow.closeWindow();
         }).start();
@@ -432,7 +432,7 @@ public class Controller {
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
                 }
                 RefreshableWindow.closeWindow();
             }).start();
@@ -479,7 +479,7 @@ public class Controller {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
             }
             RefreshableWindow.closeWindow();
         }).start();
@@ -507,7 +507,7 @@ public class Controller {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
             }
             RefreshableWindow.closeWindow();
         }).start();
@@ -566,7 +566,7 @@ public class Controller {
             try {
                 Requests.sendZip(url, token, secret, folder + "\\" + instanceId + ".zip");
             } catch (IOException e) {
-                e.printStackTrace();
+                Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
             }
 
             //delete folder
@@ -577,7 +577,7 @@ public class Controller {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Popup.showMessage(2, "An error has occurred", "An error has occurred: " + e.getMessage());
             }
             RefreshableWindow.closeWindow();
         }).start();
