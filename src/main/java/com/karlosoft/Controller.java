@@ -219,6 +219,10 @@ public class Controller {
 
 
     //FUNCTIONAL
+    public static String getCurrentVersion() {
+        return "1.0.0";
+    }
+
     public static String getWorkingDirectory() {
         return System.getProperty("user.dir");
     }
@@ -361,8 +365,6 @@ public class Controller {
 
             //delete folder
             RefreshableWindow.addFile();
-            //wait for push to finish
-
             GithubSyncer.deleteFolder(folder);
 
             //sleep for 500 ms - this is due to small zip that uploads faster than window is generated

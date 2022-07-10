@@ -16,6 +16,9 @@ public class App
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        String[] instancesName = Controller.getConfigParameter("appGlobal", "app.instancesNames").split(",");
+        String[] instancesCodes = Controller.getConfigParameter("appGlobal", "app.instancesCode").split(",");
 
         //set better design
         try { 
@@ -23,9 +26,6 @@ public class App
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        String[] instancesName = Controller.getConfigParameter("appGlobal", "app.instancesNames").split(",");
-        String[] instancesCodes = Controller.getConfigParameter("appGlobal", "app.instancesCode").split(",");
 
         InstanceSelect.run(instancesName, instancesCodes);
     }

@@ -54,7 +54,7 @@ public class InstanceSelect {
             }
         }
 
-        dialog = jop.createDialog("Select your syncer instance - Enplated Syncer");
+        dialog = jop.createDialog("Select your syncer instance - Enplated Syncer " + Controller.getCurrentVersion());
         dialog.setSize(1000, 450);
         dialog.setContentPane(scrollPane);
         dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

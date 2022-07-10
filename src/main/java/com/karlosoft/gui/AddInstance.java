@@ -199,7 +199,7 @@ public class AddInstance {
         panel.add(addInstanceButton);
 
         //show panel
-        dialog = jop.createDialog("Add a new instance - Enplated Syncer");
+        dialog = jop.createDialog("Add a new instance - Enplated Syncer" + Controller.getCurrentVersion());
         dialog.setSize(1000, 450);
         dialog.setContentPane(panel);
         dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
