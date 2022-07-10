@@ -20,8 +20,8 @@ public class GithubSyncer {
         File file = new File(path);
         if (!file.exists()) {
             try {
-                Runtime.getRuntime().exec("git init " + folder);
-            } catch (Exception e) {
+                execCmd("git init", folder);
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }

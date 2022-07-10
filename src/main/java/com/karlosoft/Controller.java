@@ -364,6 +364,13 @@ public class Controller {
             //wait for push to finish
 
             GithubSyncer.deleteFolder(folder);
+
+            //sleep for 500 ms - this is due to small zip that uploads faster than window is generated
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             RefreshableWindow.closeWindow();
         }).start();
 
@@ -392,6 +399,13 @@ public class Controller {
             //download zip
             GithubSyncer.pull(folder, instanceId);
             RefreshableWindow.addFile();
+
+            //sleep for 500 ms - this is due to small zip that downloads faster than window is generated
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             RefreshableWindow.closeWindow();
         }).start();
 
@@ -411,6 +425,13 @@ public class Controller {
 
                 //delete folder
                 GithubSyncer.deleteFolder(folder);   
+
+                //sleep for 500 ms - this is due to small zip that downloads faster than window is generated
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 RefreshableWindow.closeWindow();
             }).start();
 
@@ -451,6 +472,13 @@ public class Controller {
             ZipUtils.setSourceFolder(instanceFolder);
             appZip.generateFileList(new File(instanceFolder));
             appZip.zipIt(location + "\\" + zipName, true);
+
+            //sleep for 500 ms - this is due to small zip that exports faster than window is generated
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             RefreshableWindow.closeWindow();
         }).start();
 
@@ -473,6 +501,12 @@ public class Controller {
             ZipUtils.deleteFolderData(folder);
             ZipUtils.unzip(zipFile, folder, true);
 
+            //sleep for 500 ms - this is due to small zip that imports faster than window is generated
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             RefreshableWindow.closeWindow();
         }).start();
 
@@ -537,6 +571,12 @@ public class Controller {
             RefreshableWindow.addFile();
             GithubSyncer.deleteFolder(folder);
 
+            //sleep for 500 ms - this is due to small zip that deploys faster than window is generated
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             RefreshableWindow.closeWindow();
         }).start();
 

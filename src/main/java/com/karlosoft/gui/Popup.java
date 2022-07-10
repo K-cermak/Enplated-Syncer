@@ -51,8 +51,8 @@ public class Popup {
         //select folder on drive with jfilechoser
         JFileChooser chooser = new JFileChooser() {
             @Override
-            protected JDialog createDialog( Component parent ) throws HeadlessException {
-                JDialog dialog = super.createDialog( parent );
+            protected JDialog createDialog(Component parent) throws HeadlessException {
+                JDialog dialog = super.createDialog(parent);
                 dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
                 return dialog;
             }
@@ -69,8 +69,8 @@ public class Popup {
         //select file on drive with jfilechoser
         JFileChooser chooser = new JFileChooser() {
             @Override
-            protected JDialog createDialog( Component parent ) throws HeadlessException {
-                JDialog dialog = super.createDialog( parent );
+            protected JDialog createDialog(Component parent) throws HeadlessException {
+                JDialog dialog = super.createDialog(parent);
                 dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
                 return dialog;
             }
