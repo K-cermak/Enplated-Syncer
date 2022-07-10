@@ -13,9 +13,10 @@ public class InstanceSelect {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(instanceNames.length + 1, 2, 30, 30));
         JScrollPane scrollPane = new JScrollPane(panel);  
+        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
         JOptionPane jop = new JOptionPane();
 
-        JButton addButton = new JButton("Add new instance");
+        JButton addButton = new JButton("Add a new instance");
         addButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
         addButton.addActionListener(e ->
         {

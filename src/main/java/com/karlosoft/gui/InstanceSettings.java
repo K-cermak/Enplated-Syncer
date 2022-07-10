@@ -20,6 +20,7 @@ public class InstanceSettings {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(9, 1, 30, 30));
         JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
 
         //label
         JLabel label = new JLabel("Select settings that you want to change:");
@@ -112,7 +113,7 @@ public class InstanceSettings {
 
         dialog.setContentPane(scrollPane);
         dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        dialog.setTitle("Close");
+        dialog.setTitle("Instance settings");
         dialog.setSize(300, 600);
         dialog.setLocationRelativeTo(null);
         dialog.setModal(true);
@@ -131,6 +132,7 @@ public class InstanceSettings {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(4, 1, 30, 30));
         JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
         
         //label
         JLabel label = new JLabel("Is this instance a database?");
@@ -191,6 +193,7 @@ public class InstanceSettings {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(4, 1, 30, 30));
         JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
         
         //label
         JLabel label = new JLabel("Instance new name");
@@ -238,9 +241,10 @@ public class InstanceSettings {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(6, 1, 30, 30));
         JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
         
         //label
-        JLabel label = new JLabel("Sync with GitHub?");
+        JLabel label = new JLabel("Enable synchronization via GitHub?");
         label.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
         panel.add(label);
         
@@ -250,7 +254,9 @@ public class InstanceSettings {
 
         //text field
         JTextField urlTextField = new JTextField();
-        urlTextField.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 12));
+        urlTextField.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
+        urlTextField.setPreferredSize(new Dimension(250, 50));
+
         String urlText = Controller.getConfigParameter(instanceId, "github");
         if (urlText.equals("false")) {
             urlTextField.setText("");
@@ -316,7 +322,7 @@ public class InstanceSettings {
         dialog.setContentPane(scrollPane);
         dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         dialog.setTitle("Change GitHub settings");
-        dialog.setSize(300, 400);
+        dialog.setSize(300, 600);
         dialog.setLocationRelativeTo(null);
         dialog.setModal(true);
         dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
@@ -330,6 +336,7 @@ public class InstanceSettings {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(10, 1, 30, 30));
         JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
 
         //deploy
         JLabel label = new JLabel("Deployable settings");
@@ -343,6 +350,8 @@ public class InstanceSettings {
         //text field
         JTextField urlTextField = new JTextField();
         urlTextField.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
+        urlTextField.setPreferredSize(new Dimension(250, 50));
+
         String urlText = Controller.getConfigParameter(instanceId, "url");
 
         if (urlText.equals("false")) {
@@ -464,7 +473,7 @@ public class InstanceSettings {
         dialog.setContentPane(scrollPane);
         dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         dialog.setTitle("Change deployable settings");
-        dialog.setSize(300, 550);
+        dialog.setSize(300, 650);
         dialog.setLocationRelativeTo(null);
         dialog.setModal(true);
         dialog.setIconImage(new ImageIcon(Controller.getWorkingDirectory() + "/images/png-favicon.png").getImage());
@@ -476,10 +485,12 @@ public class InstanceSettings {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(4, 1, 30, 30));
         JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
 
         //id
-        JTextArea label = new JTextArea("Warning: The change of ID is for the case where you are syncing data \n across multiple devices and using GitHub to do so. \nBe aware that synced data with GitHub is linked to the ID and existing \n uploaded data will no longer work for syncing.");
+        JTextArea label = new JTextArea("Warning: The change of ID is for the case where you are syncing data\nacross multiple devices and using GitHub to do so.\nBe aware that synced data with GitHub is linked to the ID and existing\nuploaded data will no longer work for syncing.");
         label.setEditable(false);
+        label.setBackground(new Color(240, 240, 240));
         label.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
         panel.add(label);
 

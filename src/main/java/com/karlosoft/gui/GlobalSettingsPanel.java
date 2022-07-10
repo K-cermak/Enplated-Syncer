@@ -9,15 +9,16 @@ import java.awt.*;
 public class GlobalSettingsPanel {
 
     static JDialog dialog;
-    static String folder = Controller.getConfigParameter("appGlobal", "app.dbPath");
+    static String folder;
 
     public static void run() {
+        folder = Controller.getConfigParameter("appGlobal", "app.dbPath");
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(4, 2, 30, 30));  
         JOptionPane jop = new JOptionPane();
 
         //input for github email
-        JLabel githubEmailLabel = new JLabel("Github email:", JLabel.CENTER);
+        JLabel githubEmailLabel = new JLabel("Github e-mail:", JLabel.CENTER);
         githubEmailLabel.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 20));
         panel.add(githubEmailLabel);
 
@@ -38,8 +39,10 @@ public class GlobalSettingsPanel {
 
         
         //database path
-        JLabel databasePathLabel = new JLabel("Database path (selected: "+ folder +"):", JLabel.CENTER);
-        databasePathLabel.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
+        JTextArea databasePathLabel = new JTextArea("                                 Database path:\n"+ folder +"");
+        databasePathLabel.setEditable(false);
+        databasePathLabel.setBackground(new Color(240, 240, 240));
+        databasePathLabel.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 20));
         panel.add(databasePathLabel);
 
         //button for select
@@ -49,7 +52,7 @@ public class GlobalSettingsPanel {
             String newFolder = Controller.selectFolder();
             if (!newFolder.equals("") && newFolder != null) {
                 folder = newFolder;
-                databasePathLabel.setText("Database path (selected: " + folder + ")");
+                databasePathLabel.setText("                                 Database path:\n"+ folder +"");
             }
         });
         panel.add(databasePathButton);
@@ -62,10 +65,16 @@ public class GlobalSettingsPanel {
             Controller.setConfigParameter("appGlobal", "app.githubEmail", githubEmailText.getText());
             Controller.setConfigParameter("appGlobal", "app.githubPassword", String.valueOf(githubPasswordText.getPassword()));
             Controller.setConfigParameter("appGlobal", "app.dbPath", folder);
-            Popup.showMessage(0, "Success", "Succesfully edited");
+            Popup.showMessage(0, "Success", "Successfully edited");
             dialog.dispose();
         });
         panel.add(saveButton);
+
+        //cancel button
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
+        cancelButton.addActionListener(e -> dialog.dispose());
+        panel.add(cancelButton);
 
         //show panel
         dialog = jop.createDialog("Global settings - Enplated Syncer " + Controller.getCurrentVersion());

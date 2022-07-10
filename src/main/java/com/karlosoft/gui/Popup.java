@@ -89,6 +89,7 @@ public class Popup {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(3, 1, 30, 30));
         JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
         JButton closeButton = new JButton("Close app");
         closeButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 15));
         closeButton.addActionListener(e ->

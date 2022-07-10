@@ -27,6 +27,7 @@ public class Instance {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(3, 2, 30, 30));
         JScrollPane scrollPane = new JScrollPane(panel);  
+        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
         JOptionPane jop = new JOptionPane();
 
 

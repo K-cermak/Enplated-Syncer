@@ -36,6 +36,7 @@ public class RefreshableWindow {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(2, 1, 10, 10));
         JScrollPane scrollPane = new JScrollPane(panel);  
+        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
         JOptionPane jop = new JOptionPane();
 
 
