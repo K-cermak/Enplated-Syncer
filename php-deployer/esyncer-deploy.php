@@ -141,7 +141,7 @@
         if (is_dir($dir)) {
             $objects = scandir($dir);
             foreach ($objects as $object) {
-                if ($object != "." && $object != "..") {
+                if ($object != "." && $object != ".." && $object != "esyncer.lock" && $object != "esyncer-vars.php" && $object != "esyncer-deploy.php" && $object != "enplated-syncer" && $object != "extract") {
                     if (filetype($dir."/".$object) == "dir") {
                         delete($dir."/".$object, $dir);
                     } else {
