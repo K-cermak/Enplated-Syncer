@@ -52,6 +52,8 @@ public class Requests {
 			Popup.showMessage(1, "Error", "Deployment failed.\n\nError code: " + responseContent);
 		}
 
+		System.out.println(responseContent);
+
 		httpclient.close();
     }
 }

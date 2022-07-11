@@ -37,14 +37,18 @@ public class ZipUtils {
             FileInputStream in = null;
 
             for (String file: this.fileList) {
+                //replace \ with /
+                String fileName = file.replace("\\", "/");
+
+
                 if (notify == true) {
                     Controller.refreshWindow();
                 }
 
-                ZipEntry ze = new ZipEntry(source + File.separator + file);
+                ZipEntry ze = new ZipEntry(source + "/" + fileName);
                 zos.putNextEntry(ze);
                 try {
-                    in = new FileInputStream(SOURCE_FOLDER + File.separator + file);
+                    in = new FileInputStream(SOURCE_FOLDER + "/" + file);
                     int len;
                     while ((len = in .read(buffer)) > 0) {
                         zos.write(buffer, 0, len);
@@ -113,7 +117,7 @@ public class ZipUtils {
                     Controller.refreshWindow();
                 }
                 String fileName = ze.getName();
-                File newFile = new File(unzipTo + File.separator + fileName);
+                File newFile = new File(unzipTo + "/" + fileName);
                 new File(newFile.getParent()).mkdirs();
                 FileOutputStream fos = new FileOutputStream(newFile);
                 byte[] buffer = new byte[1024];

@@ -237,10 +237,10 @@ public class Controller {
     }
 
     public static void firstInstall() {
-        Popup.showMessage(4, "Welcome to Enplated Syncer", "Thank you for installing it and I hope you will be satisfied with it.");
-        Popup.showMessage(4, "Welcome to Enplated Syncer", "Disclaimer: Enplated Syncer is distributed completely free of charge and is not covered by any warranties.\nEnplated Syncer is in a testing phase and therefore may not be fully optimized for your system.");
-        Popup.showMessage(4, "Welcome to Enplated Syncer", "Although highly unlikely, Enplated Syncer manipulates your files on the drive.\nTherefore, you should always have at least 1 backup of your data in case Enplated Syncer encounters an error and starts manipulating files other than those it has the right to.");
-        Popup.showMessage(4, "Welcome to Enplated Syncer", "All guides can be found both on GitHub (github.com/K-cermak/Enplated-Syncer) and on the web (Enplated-Syncer.k-cermak.com).");
+        Popup.showMessage(3, "Welcome to Enplated Syncer", "Thank you for installing Enplated Syncer and I hope you will be satisfied with it.");
+        Popup.showMessage(3, "Welcome to Enplated Syncer", "Disclaimer: Enplated Syncer is distributed completely free of charge and is not covered by any warranties.\nEnplated Syncer is in a testing phase and therefore may not be fully optimized for your system.");
+        Popup.showMessage(3, "Welcome to Enplated Syncer", "Enplated Syncer manipulates your files on the drive.\nTherefore, you should always have at least 1 backup of your data.\nAlthough highly unlikely, it may happen that Enplated Syncer starts to manipulate files it has no right to.");
+        Popup.showMessage(3, "Welcome to Enplated Syncer", "All guides can be found both on GitHub (github.com/K-cermak/Enplated-Syncer) and on the web (Enplated-Syncer.k-cermak.com).");
 
     }
 

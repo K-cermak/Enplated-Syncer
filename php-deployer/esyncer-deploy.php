@@ -1,4 +1,7 @@
 <?php
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+
     header('Content-Type: text/html; charset=utf-8');
     session_start();
     require_once "esyncer-vars.php";
@@ -141,7 +144,7 @@
         if (is_dir($dir)) {
             $objects = scandir($dir);
             foreach ($objects as $object) {
-                if ($object != "." && $object != ".." && $object != "esyncer.lock" && $object != "esyncer-vars.php" && $object != "esyncer-deploy.php" && $object != "enplated-syncer" && $object != "extract") {
+                if ($object != "." && $object != ".." && $object != "esyncer.lock" && $object != "esyncer-vars.php" && $object != "esyncer-deploy.php" && $object != "enplated-syncer" && $object != "extract" && $object != "esyncer") {
                     if (filetype($dir."/".$object) == "dir") {
                         delete($dir."/".$object, $dir);
                     } else {
@@ -239,7 +242,7 @@
             //logout
             if (isset($_GET["logout"]) && $_SESSION["access-code"] == ACCESS_CODE) {
                 session_destroy();
-                header("Location: esyncer-deploy.php");
+                echo "<script> window.location.replace('esyncer-deploy.php') </script>";
                 break;
             }
 
@@ -254,7 +257,7 @@
                     $_SESSION["access-code"] = ACCESS_CODE;
                     $_SESSION["message"] = "Login successful";
                     $_SESSION["message-type"] = "success";
-                    header("Location: esyncer-deploy.php");
+                    echo "<script> window.location.replace('esyncer-deploy.php') </script>";
                     die();
                 } else {
                     echo generateMessage("danger", "Access code is incorrect.");
@@ -369,7 +372,7 @@
                     deleteLine(5 + $_GET["delete-project-submit"]);
                     $_SESSION["message"] = "Project succesfully deleted";
                     $_SESSION["message-type"] = "success";
-                    header("Location: esyncer-deploy.php");
+                    echo "<script> window.location.replace('esyncer-deploy.php') </script>";
                     die();
                 }
                 break;
@@ -414,7 +417,7 @@
 
                     $_SESSION["message"] = "Token and secret of project <b>". PROJECTS[$_GET["regenerate-token-submit"]]["name"] ."</b> succesfully regenerated. New token is: <b>" . $token . "</b> and new secret is: <b>" . $secret . "</b>.";
                     $_SESSION["message-type"] = "success";
-                    header("Location: esyncer-deploy.php");
+                    echo "<script> window.location.replace('esyncer-deploy.php') </script>";
                     die();
                 }
                 break;
@@ -570,7 +573,7 @@
                         This is a simple tool to deploy your projects to web server easily with Enplated Syncer.
                         <br>
                         <br>
-                        You can learn more about Enplated Syncer <a href="https://github.com/K-cermak/Enplated-Syncer" target="_blank">here</a>.
+                        You can learn more about Enplated Syncer on <a href="https://github.com/K-cermak/Enplated-Syncer" target="_blank">GitHub</a> or on <a href="https://enplated-syncer.k-cermak.com/" target="_blank">Enplated-Syncer.k-cermak.com</a>.
                         <br>
                         <br>
                         <br>

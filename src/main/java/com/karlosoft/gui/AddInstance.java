@@ -18,16 +18,23 @@ public class AddInstance {
 
         //name
         JLabel nameLabel = new JLabel("Name");
-        JTextField nameField = new JTextField();
+        nameLabel.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 20));
+        nameLabel.setHorizontalAlignment(JLabel.CENTER);
         panel.add(nameLabel);
+
+        JTextField nameField = new JTextField();
+        nameField.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 20));
         panel.add(nameField);
 
         //select folder
         JLabel folderLabel = new JLabel("Folder");
+        folderLabel.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 20));
+        folderLabel.setHorizontalAlignment(JLabel.CENTER);
         panel.add(folderLabel);
 
         //select folder dialog
         JButton folderButton = new JButton("Select folder");
+        folderButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 20));
         folderButton.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -54,6 +61,8 @@ public class AddInstance {
 
         //add instance button
         JButton addInstanceButton = new JButton("Add instance");
+        addInstanceButton.setFont(new Font(FontLocalizator.returnFont(), Font.PLAIN, 20));
+        
         JTextField urlTextField = new JTextField();
         JTextField tokenTextField = new JTextField();
         JTextField secretTextField = new JTextField();
