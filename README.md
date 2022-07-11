@@ -108,7 +108,6 @@
 
 <br/>
 <br/>
-<br/>
 
 ### Authors:
 - <a href="https://k-cermak.com">Karel Čermák</a>
