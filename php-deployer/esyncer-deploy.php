@@ -225,7 +225,7 @@
                 if ($_POST["new-access-code"] == $_POST["new-access-code-repeat"] && ACCESS_CODE == "") {
                     //min 5 chars
                     if (strlen($_POST["new-access-code"]) >= 5) {
-                        replaceLine(2, 'define("ACCESS_CODE", "' . $_POST["new-access-code"] . '");');
+                        replaceLine(2, '        define("ACCESS_CODE", "' . $_POST["new-access-code"] . '");');
                         echo generateMessage("success", "Access code updated! Please login.");
                     } else {
                         echo generateMessage("danger", "Access code must be at least 5 characters long.");
