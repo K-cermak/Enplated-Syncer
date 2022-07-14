@@ -112,7 +112,7 @@
 ### Authors:
 - <a href="https://k-cermak.com">Karel Čermák</a>
 
-### Enplated Framework is part of Enplated project:
+### Enplated Syncer is part of Enplated project:
 - <a href="https://enplated.k-cermak.com">Enplated.k-cermak.com</a>
 
 ### Sources used:
