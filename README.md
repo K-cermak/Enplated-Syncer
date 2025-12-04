@@ -16,8 +16,8 @@
 ---
 
 <p align="center">
-    <a href="https://enplated-syncer.k-cermak.com">
-        <img src="https://mirror.k-cermak.com/data/logo-v3/logo-enplatedsyncer-bg.svg" width="700" height="150" alt="Enplated Syncer logo">
+    <a href="https://enplated.karlosoft.com">
+        <img src="https://cdn.karlosoft.com/cdn-data/ks/img/enplated/github/enp-syncer.svg" width="700" height="150" alt="Enplated Syncer logo">
     </a>
     <br>
         <br>
@@ -31,21 +31,21 @@
 
 #### Reason #1
 
-<img src="https://mirror.k-cermak.com/data/enplated-syncer/esyncer-icon1-dark.svg" width="1200" height="300" alt="Synchronization between devices">
+<img src="https://cdn.karlosoft.com/cdn-data/ks/img/enplated/github/enp-syncer-illustration1.svg" width="1200" height="300" alt="Synchronization between devices">
 
 <br/>
 <br/>
 
 #### Reason #2
 
-<img src="https://mirror.k-cermak.com/data/enplated-syncer/esyncer-icon2-dark.svg" width="1200" height="300" alt="Web Deployment">
+<img src="https://cdn.karlosoft.com/cdn-data/ks/img/enplated/github/enp-syncer-illustration2.svg" width="1200" height="300" alt="Web Deployment">
 
 <br/>
 <br/>
 
 #### Reason #3
 
-<img src="https://mirror.k-cermak.com/data/enplated-syncer/esyncer-icon3-dark.svg" width="1200" height="300" alt="Exporting data">
+<img src="https://cdn.karlosoft.com/cdn-data/ks/img/enplated/github/enp-syncer-illustration3.svg" width="1200" height="300" alt="Exporting data">
 
 <br/>
 <br/>
@@ -62,13 +62,7 @@
 
 ### Where to download Enplated Syncer?
 
-- You can download Enplated Syncer on <a href="https://enplated-syncer.k-cermak.com/download">Download page</a> or directly on <a href="https://github.com/K-cermak/Enplated-Syncer/releases">GitHub releases</a>.
-
-<br/>
-
-### How to use Enplated Syncer?
-
-- To use Enplated Syncer, you need to install it on your device. You can do this by following the instructions on the <a href="https://enplated-syncer.k-cermak.com/help">Help page</a>.
+- You can download Enplated Syncer directly on <a href="https://github.com/K-cermak/Enplated-Syncer/releases">GitHub releases</a>.
 
 <br/>
 
@@ -115,34 +109,27 @@
 
 <br/>
 
-### What is the official website?
-
-- The official website is <a href="https://enplated-syncer.k-cermak.com">Enplated-Syncer.k-cermak.com</a>.
-
-<br/>
-
 ### What license is Enplated Syncer available under?
 
 - Enplated Syncer is available under the MIT license.
-- You can read the full license on the <a href="https://enplated-syncer.k-cermak.com/license">License page</a>.
 
 <br/>
 
 ### Can I send you a donation?
 
 - Thank you very much for all the donations. ❤️
-- You can send me a donation on <a href="https://enplated-syncer.k-cermak.com/donate">Enplated-Syncer.k-cermak.com/donate</a>.
+- You can send me a donation on <a href="https://enplated.karlosoft.com/donate">enplated.karlosoft.com/donate</a>.
 
 <br/>
 <br/>
 
 ### Authors:
 
-- <a href="https://k-cermak.com">Karel Čermák</a>
+- <a href="https://karlosoft.com">Karel Čermák</a>
 
 ### Enplated Syncer is part of Enplated project:
 
-- <a href="https://enplated.k-cermak.com">Enplated.k-cermak.com</a>
+- <a href="https://enplated.karlosoft.com">Enplated.karlosoft.com</a>
 
 ### Sources used:
 
