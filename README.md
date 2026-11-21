@@ -16,11 +16,14 @@
 ---
 
 <p align="center">
-    <a href="https://enplated.karlosoft.com">
-        <img src="https://cdn.karlosoft.com/cdn-data/ks/img/enplated/github/enp-syncer.svg" width="700" height="150" alt="Enplated Syncer logo">
+    <a href="https://enplated.karlosoft.com/">
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://cdn.karlosoft.com/cdn-data/ks/img/enplated/enp-syncer.svg">
+            <source media="(prefers-color-scheme: light)" srcset="https://cdn.karlosoft.com/cdn-data/ks/img/enplated/enp-syncer-dark.svg">
+            <img alt="Enplated Syncer" src="https://cdn.karlosoft.com/cdn-data/ks/img/enplated/enp-syncer-dark.svg" width="700">
+        </picture>
     </a>
     <br>
-        <br>
     <strong>Synchronize data between devices using GitHub and deploy websites easily.</strong>
 </p>
 
